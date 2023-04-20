@@ -2,12 +2,16 @@ import { db } from "../database";
 
 export const getUserRoute = {
     method: 'GET',
-    path: 'api/user/{id}',
+    path: '/api/user/{id}',
     handler: async (req, h) =>{
         const {results} = await db.query(
-            'SELECT * FROM Usuarios'
+            `SELECT *
+            FROM Accesos a
+            WHERE a.id_matricula = ? AND a.contrasena = ?;`,
+            [id]
         );
       
         return results;
     }
 }
+

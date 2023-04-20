@@ -1,5 +1,6 @@
 import { getUserRoute } from "./getUser";
 
-export default{
+export default[
     getUserRoute,
-}
+]
+    
