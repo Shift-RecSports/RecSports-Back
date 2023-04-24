@@ -28,9 +28,9 @@ export const getDeportes = {
       const body = JSON.parse(req.payload);
       await db.query(
         `INSERT INTO Deportes (nombre, descripcion, materiales, imagen, duracion) VALUES (?,?,?,?,?);`,
-        [ body.nombre, body.descripcion, body.materiales, body.imagen, newDeporte.duracion]
+        [ body.nombre, body.descripcion, body.materiales, body.imagen, body.duracion]
       );
-      return newDeporte;
+      return body;
     }
   };
 
@@ -59,5 +59,27 @@ export const getDeportes = {
         [id_deporte],
       );
       return results[0];
+    }
+  };
+
+
+  export const deleteDeporte = {
+    method: 'DELETE',
+    path: '/deportes/{id_deporte}',
+    handler: async (req, h) => {
+
+      const {id_deporte} = req.params;
+    
+      try {
+        await db.query(
+          `DELETE FROM Deportes WHERE id_deporte = ?;`,
+          [ id_deporte],
+        );
+  
+        return {message : `Deporte ${id_deporte} ha sido eliminado`};
+      } catch (error) {
+        console.error(error);
+        return h.response({ error: `Error eliminando deporte ${id_deporte}` }).code(500);
+      }
     }
   };
