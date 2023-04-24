@@ -36,7 +36,7 @@ export const getDeportes = {
 
 
   export const updateDeporte = {
-    method: 'POST',
+    method: 'PUT',
     path: '/deportes/{id_deporte}',
     handler: async (req, h) => {
 
