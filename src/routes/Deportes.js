@@ -50,15 +50,19 @@ export const getDeportes = {
       //   "imagen": "pingpong.jpg",
       //   "duracion": 60
       // }
-      await db.query(
-        `UPDATE Deportes SET nombre = ?, descripcion = ?, materiales = ?, imagen = ?, duracion = ? WHERE id_deporte = ?;`,
-        [ body.nombre, body.descripcion, body.materiales, body.imagen, body.duracion,id_deporte],
-      );
-      const { results } = await db.query(
-        `SELECT * FROM Deportes WHERE id_deporte = ?`,
-        [id_deporte],
-      );
-      return results[0];
+
+        const update = await db.query(
+          `UPDATE Deportes SET nombre = ?, descripcion = ?, materiales = ?, imagen = ?, duracion = ? WHERE id_deporte = ?;`,
+          [ body.nombre, body.descripcion, body.materiales, body.imagen, body.duracion,id_deporte],
+        );
+       
+        const { results } = await db.query(
+          `SELECT * FROM Deportes WHERE id_deporte = ?`,
+          [id_deporte],
+        );
+        
+        return results[0];
+      
     }
   };
 
@@ -70,16 +74,10 @@ export const getDeportes = {
 
       const {id_deporte} = req.params;
     
-      try {
         await db.query(
-          `DELETE FROM Deportes WHERE id_deporte = ?;`,
+          `call delete_Deporte(?)`,
           [ id_deporte],
         );
-  
-        return {message : `Deporte ${id_deporte} ha sido eliminado`};
-      } catch (error) {
-        console.error(error);
-        return h.response({ error: `Error eliminando deporte ${id_deporte}` }).code(500);
-      }
+        
     }
   };

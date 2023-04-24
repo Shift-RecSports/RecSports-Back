@@ -15,13 +15,7 @@ const start = async() => {
 
         db.connect();
         
-        // server.route({
-        //     method: 'GET',
-        //     path: '/hello',
-        //     handler: (req, h) =>{
-        //         return h.response("Hello!").code(201);
-        //     }
-        // });
+       
         await server.start();
         console.log(`Server is listening on ${server.info.uri}`);
 }

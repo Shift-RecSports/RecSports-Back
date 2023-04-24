@@ -1,4 +1,6 @@
 import { deleteDeporte, getDeportes, postDeporte, updateDeporte } from "./Deportes";
+import { getRegistrosGimnasio, postRegistroGimnasio } from "./RegistrosGimnasio";
+
 import { getUsuario } from "./Usuarios";
 
 export default[
@@ -6,6 +8,8 @@ export default[
     getDeportes, 
     postDeporte,
     updateDeporte,
-    deleteDeporte
+    deleteDeporte,
+    getRegistrosGimnasio,
+    postRegistroGimnasio
 ]
     
