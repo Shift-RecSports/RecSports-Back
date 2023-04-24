@@ -1,7 +1,9 @@
-import { getUserRoute,getUsuario } from "./getUser";
+import { getDeportes, postDeporte } from "./Deportes";
+import { getUsuario } from "./Usuarios";
 
 export default[
-    getUserRoute,
     getUsuario,
+    getDeportes, 
+    postDeporte,
 ]
     

@@ -17,14 +17,16 @@ export const getUserRoute = {
 
 export const getUsuario = {
     method: 'GET',
-    path: '/api/usuario/{id}',
+    path: '/usuario/{id}',
     handler: async (req, h) => {
         const id = String(req.params.id);
-      const { results } = await db.query(
+      const {results} = await db.query(
         `SELECT * FROM RecSports.Usuarios u
         WHERE id_matricula = ?`,
        [id]
       );
-      return results;
+      return results[0];
     }
   };
+
+  

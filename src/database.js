@@ -1,5 +1,9 @@
-import mysql from 'mysql';
+// import mysql from 'mysql';
 
+const express = require('express');
+const mysql = require('mysql');
+
+const app = express();
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -8,6 +12,7 @@ const connection = mysql.createConnection({
     database: 'RecSports',
 
 });
+
 
 export const db = {
     connect: () => connection.connect(),
@@ -21,4 +26,6 @@ export const db = {
         }),
         end: () => connection.end(),
 }
+
+
 
