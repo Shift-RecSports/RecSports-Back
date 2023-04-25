@@ -1,7 +1,8 @@
 import { db } from "../database";
 
+//GET todos los registros de Gimnasio
 export const getRegistrosGimnasio = {
-    method: 'GET',
+  method: 'GET',
     path: '/registros-gimnasio',
     handler: async (req, h) => {
       const { results } = await db.query(
@@ -10,10 +11,25 @@ export const getRegistrosGimnasio = {
       );
       return results;
     }
-  };
+};
 
-  export const postRegistroGimnasio = {
-    method: 'POST',
+//GET 1 registro de gimnasio
+export const getRegistroGimnasio = {
+  method: 'GET',
+  path: '/registros-gimnasio/{id_registro}',
+  handler: async (req, h) => {
+    const {id_registro} = req.params;
+    const { results } = await db.query(
+      `SELECT * FROM RegistrosGimnasio WHERE id_registro = ?;`,
+      [id_registro]
+    );
+    return results[0];
+  }
+};
+
+//CREAR 1 registro degimnasio
+export const postRegistroGimnasio = {
+  method: 'POST',
     path: '/agregar-registro-gimnasio',
     handler: async (req, h) => {
 
@@ -32,53 +48,50 @@ export const getRegistrosGimnasio = {
       );
       return body;
     }
-  };
+};
 
+//UPDATE 1 deporte
+export const updateRegistroGimnasio = {
+  method: 'PUT',
+  path: '/registros-gimnasio/{id_registro}',
+  handler: async (req, h) => {
 
-  export const updateRegistroGimnasio = {
-    method: 'PUT',
-    path: '/deportes/{id_deporte}',
-    handler: async (req, h) => {
-
-      const {id_deporte} = req.params;
-      const body = JSON.parse(req.payload);
-      // Body example
+    const {id_registro} = req.params;
+    const body = JSON.parse(req.payload);
+    // Body example
       // {
-      //   "nombre": "Ping Pong",
-      //   "descripcion": "Deporte de mesa",
-      //   "materiales": "Raquetas de ping pong, pelotas",
-      //   "imagen": "pingpong.jpg",
-      //   "duracion": 60
+      //   "matricula": "A01111111",
+      //   "entrada": "08:00:00",
+      //   "salida": "09:00:00",
+      //   "fecha": "2022-01-03T06:00:00.000Z"
       // }
-      await db.query(
-        `UPDATE Deportes SET nombre = ?, descripcion = ?, materiales = ?, imagen = ?, duracion = ? WHERE id_deporte = ?;`,
-        [ body.nombre, body.descripcion, body.materiales, body.imagen, body.duracion,id_deporte],
-      );
-      const { results } = await db.query(
-        `SELECT * FROM Deportes WHERE id_deporte = ?`,
-        [id_deporte],
-      );
-      return results[0];
-    }
-  };
 
+      RegistrosGimnasio(matricula, entrada, salida, fecha)
+    await db.query(
+      `UPDATE RegistrosGimnasio SET matricula = ?, entrada = ?, salida = ?, fecha = ?,WHERE id_deporte = ?;`,
+      [ body.matricula, body.entrada, body.salida, body.fecha, id_registro],
+    );
+    const { results } = await db.query(
+      `SELECT * FROM RegistrosGimnasio WHERE id_registro = ?`,
+      [id_registro],
+    );
+    return results[0];
+  }
+};
 
-  export const deleteDeporte = {
-    method: 'DELETE',
-    path: '/deportes/{id_deporte}',
-    handler: async (req, h) => {
+//DELETE  1 deporte
+export const deleteRegistroGimnasio = {
+method: 'DELETE',
+path: '/registros-gimnasio/{id_registro}',
+handler: async (req, h) => {
 
-      const {id_deporte} = req.params;
+  const {id_registro} = req.params;
+
+    const {results} = await db.query(
+      `DELETE FROM RegistrosGimnasio WHERE id_registro = ?;`,
+      [id_registro],
+    );
     
-      try {
-        await db.query(
-          `call delete_Deporte(?)`,
-          [ id_deporte],
-        );
-        return {message : `Deporte ${id_deporte} ha sido eliminado`};
-      } catch (error) {
-        console.error(error);
-        return h.response({ error: `Error eliminando deporte ${id_deporte}` }).code(500);
-      }
-    }
-  };
+    return null
+}
+};
