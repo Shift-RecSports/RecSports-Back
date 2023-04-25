@@ -20,7 +20,8 @@ export const getRegistroGimnasio = {
   handler: async (req, h) => {
     const {id_registro} = req.params;
     const { results } = await db.query(
-      `SELECT * FROM RegistrosGimnasio WHERE id_registro = ?;`,
+      `SELECT *,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha
+      FROM RegistrosGimnasio WHERE id_registro = ?;`,
       [id_registro]
     );
     return results[0];
@@ -38,15 +39,18 @@ export const postRegistroGimnasio = {
       //   "matricula": "A01111111",
       //   "entrada": "08:00:00",
       //   "salida": "09:00:00",
-      //   "fecha": "2022-01-03T06:00:00.000Z"
+      //   "fecha": "2022-01-03"
       // }
   
       const body = JSON.parse(req.payload);
-      await db.query(
-        `INSERT INTO RegistrosGimnasio(matricula, entrada, salida, fecha) VALUES(?, ?, ?, DATE(?));`,
+      
+
+      const {results} = await db.query(
+        `INSERT INTO RegistrosGimnasio(matricula, entrada, salida, fecha) VALUES(?, ?, ?, DATE(?))`,
         [ body.matricula, body.entrada, body.salida, body.fecha]
       );
-      return body;
+
+      return results
     }
 };
 
@@ -63,12 +67,12 @@ export const updateRegistroGimnasio = {
       //   "matricula": "A01111111",
       //   "entrada": "08:00:00",
       //   "salida": "09:00:00",
-      //   "fecha": "2022-01-03T06:00:00.000Z"
+      //   "fecha": "2022-01-03"
       // }
 
       RegistrosGimnasio(matricula, entrada, salida, fecha)
     await db.query(
-      `UPDATE RegistrosGimnasio SET matricula = ?, entrada = ?, salida = ?, fecha = ?,WHERE id_deporte = ?;`,
+      `UPDATE RegistrosGimnasio SET matricula = ?, entrada = ?, salida = ?, fecha = ?,WHERE id_registro = ?;`,
       [ body.matricula, body.entrada, body.salida, body.fecha, id_registro],
     );
     const { results } = await db.query(
@@ -92,6 +96,6 @@ handler: async (req, h) => {
       [id_registro],
     );
     
-    return null
+    return  null
 }
 };
