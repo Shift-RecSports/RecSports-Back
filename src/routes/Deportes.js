@@ -1,8 +1,6 @@
 import { db } from "../database";
 import shortid from 'shortid';
 
-
-
 //GET todos los deportes
 export const getDeportes = {
     method: 'GET',
@@ -45,7 +43,6 @@ export const postDeporte = {
     // }
     const body = JSON.parse(req.payload);
     const id = shortid.generate(); //9 characters
-    console.log(id)
     await db.query(
       `INSERT INTO Deportes (id, nombre, descripcion, materiales, imagen, duracion) VALUES (?,?,?,?,?,?);`,
       [id, body.nombre, body.descripcion, body.materiales, body.imagen, body.duracion]
@@ -69,7 +66,6 @@ export const updateDeporte = {
     const body = JSON.parse(req.payload);
     // Body example
     // {
-    //   "id": "Gs6g4Ky9T",
     //   "nombre": "Tennis",
     //   "descripcion": "Deporte que se juega con una raqueta y una pelota",
     //   "materiales": "Raqueta, pelota, red, calzado deportivo",
@@ -101,7 +97,7 @@ export const deleteDeporte = {
     const {id} = req.params;
   
       await db.query(
-        `call delete_Deporte(?)`,
+        `call deporteDelete(?)`,
         [id],
       );
 

@@ -1,56 +1,61 @@
 import { db } from "../database";
 import { default as short } from 'short-uuid';
 
-//GET todos los registros de Gimnasio
-export const getRegistrosGimnasio = {
+//GET todo el historial de aforos
+export const getHistoriales = {
   method: 'GET',
-    path: '/registros-gimnasio',
+    path: '/historial',
     handler: async (req, h) => {
       const { results } = await db.query(
         `SELECT *,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha
-        FROM RegistrosGimnasio;`,
+        FROM Historial;`,
       );
       return results;
     }
 };
 
-//GET 1 registro de gimnasio
-export const getRegistroGimnasio = {
+//GET 1 historial de aforo
+export const getHistorial = {
   method: 'GET',
-  path: '/registros-gimnasio/{id}',
+  path: '/historial/{id}',
   handler: async (req, h) => {
     const {id} = req.params;
     const { results } = await db.query(
       `SELECT * ,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha
-      FROM RegistrosGimnasio WHERE id= ?;`,
+      FROM Historial WHERE id= ?;`,
       [id]
     );
     return results[0];
   }
 };
 
-//CREAR 1 registro degimnasio
-export const postRegistroGimnasio = {
+//CREAR 1 historial de aforo
+export const postHistorial = {
   method: 'POST',
-    path: '/registros-gimnasio',
+  path: '/historial',
     handler: async (req, h) => {
       // Body example
-      // {
-      //   "id": "20",
-      //   "matricula": "A01570656",
-      //   "entrada": "08:00:00",
-      //   "salida": "10:00:00",
-      //   "fecha": "2023-04-27"
-      // }
+    //   {
+    //     "num_semana": 1,
+    //     "fecha": "2023-01-01",
+    //     "hora_inicio": "10:00:00",
+    //     "contador": 10,
+    //     "dia_semana": 1
+    // }
       const body = JSON.parse(req.payload);
       const id = short.generate(); //22 character uuid
-
+      try{
       await db.query(
-        `INSERT INTO RegistrosGimnasio(id, matricula, entrada, salida, fecha) VALUES(?,?, ?, ?, DATE(?))`,
-        [ id, body.matricula, body.entrada, body.salida, body.fecha]
+        `INSERT INTO Historial(id, num_semana, fecha, hora_inicio, contador, dia_semana) VALUES(?,?,DATE(?),?,?,?)`,
+        [ id, body.num_semana, body.fecha, body.hora_inicio, body.contador, body.dia_semana]
+
       );
+      }
+      catch(e){
+        console.log(e)
+      }
       const {results} = await db.query(
-        `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha FROM Registrosgimnasio WHERE id = ?`,
+        `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha FROM Historial WHERE id = ?`,
         [id]
       );
 
@@ -58,10 +63,10 @@ export const postRegistroGimnasio = {
     }
 };
 
-//UPDATE 1 deporte
-export const updateRegistroGimnasio = {
+//UPDATE 1 historial de aforo
+export const updateHistorial = {
   method: 'PUT',
-  path: '/registros-gimnasio/{id}',
+  path: '/historial/{id}',
   handler: async (req, h) => {
     const {id} = req.params;
     const body = JSON.parse(req.payload);
@@ -88,10 +93,10 @@ export const updateRegistroGimnasio = {
   }
 };
 
-//DELETE  1 deporte
-export const deleteRegistroGimnasio = {
+//DELETE  1 historial de aforo
+export const deleteHistorial = {
 method: 'DELETE',
-path: '/registros-gimnasio/{id}',
+path: '/historial/{id}',
 handler: async (req, h) => {
 
   const {id} = req.params;
