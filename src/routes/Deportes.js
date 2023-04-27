@@ -1,5 +1,6 @@
 import { db } from "../database";
 
+
 //GET todos los deportes
 export const getDeportes = {
     method: 'GET',
