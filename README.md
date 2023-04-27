@@ -2,7 +2,7 @@
 Backend de RecSports
 
 # npm install shortid
- Node.js package that generates short and unique IDs that are 7 characters long
+ Node.js package that generates short and unique IDs that are 9 characters long
  npm install shortid
  import shortid from 'shortid';
  const id = shortid.generate();
