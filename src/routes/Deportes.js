@@ -101,7 +101,7 @@ export const deleteDeporte = {
         [id],
       );
 
-      return null
+      return {message: 'Success'}
       
   }
 };

@@ -103,7 +103,7 @@ export const deleteEspacio = {
       [id],
     );
 
-      return null
+      return {message: 'Success'}
       
   }
 };

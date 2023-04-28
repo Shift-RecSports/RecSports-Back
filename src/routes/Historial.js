@@ -106,7 +106,7 @@ handler: async (req, h) => {
     [id],
   );
     
-    return  null
+    return {message: 'Success'}
 }
 };
 
