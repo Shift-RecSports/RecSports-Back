@@ -4,7 +4,7 @@ import shortid from 'shortid';
 //GET todos los espacios
 export const getEspacios = {
     method: 'GET',
-    path: '/espacios',
+    path: '/api/espacios',
     handler: async (req, h) => {
       const { results } = await db.query(
         `SELECT * FROM ESPACIOS`,
@@ -16,7 +16,7 @@ export const getEspacios = {
 //GET 1 espacio
 export const getEspacio = {
   method: 'GET',
-  path: '/espacios/{id}',
+  path: '/api/espacios/{id}',
   handler: async (req, h) => {
     const {id} = req.params;
     const { results } = await db.query(
@@ -30,7 +30,7 @@ export const getEspacio = {
 //CREAR 1 espacio
 export const postEspacio = {
   method: 'POST',
-  path: '/espacios',
+  path: '/api/espacios',
   handler: async (req, h) => {
 
     // Body example
@@ -61,7 +61,7 @@ export const postEspacio = {
 //UPDATE 1 deporte
 export const updateEspacio = {
   method: 'PUT',
-  path: '/espacios/{id}',
+  path: '/api/espacios/{id}',
   handler: async (req, h) => {
 
     const {id} = req.params;
@@ -93,7 +93,7 @@ export const updateEspacio = {
 //DELETE  1 espacio
 export const deleteEspacio = {
   method: 'DELETE',
-  path: '/espacios/{id}',
+  path: '/api/espacios/{id}',
   handler: async (req, h) => {
 
     const {id} = req.params;

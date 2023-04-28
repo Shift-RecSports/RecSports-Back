@@ -4,7 +4,7 @@ import { default as short } from 'short-uuid';
 //GET todo el historial de aforos
 export const getHistoriales = {
   method: 'GET',
-    path: '/historial',
+    path: '/api/historial',
     handler: async (req, h) => {
       const { results } = await db.query(
         `SELECT *,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha
@@ -17,7 +17,7 @@ export const getHistoriales = {
 //GET 1 historial de aforo
 export const getHistorial = {
   method: 'GET',
-  path: '/historial/{id}',
+  path: '/api/historial/{id}',
   handler: async (req, h) => {
     const {id} = req.params;
     const { results } = await db.query(
@@ -32,7 +32,7 @@ export const getHistorial = {
 //CREAR 1 historial de aforo
 export const postHistorial = {
   method: 'POST',
-  path: '/historial',
+  path: '/api/historial',
     handler: async (req, h) => {
       // Body example
     //   {
@@ -66,7 +66,7 @@ export const postHistorial = {
 //UPDATE 1 historial de aforo
 export const updateHistorial = {
   method: 'PUT',
-  path: '/historial/{id}',
+  path: '/api/historial/{id}',
   handler: async (req, h) => {
     const {id} = req.params;
     const body = JSON.parse(req.payload);
@@ -96,7 +96,7 @@ export const updateHistorial = {
 //DELETE  1 historial de aforo
 export const deleteHistorial = {
 method: 'DELETE',
-path: '/historial/{id}',
+path: '/api/historial/{id}',
 handler: async (req, h) => {
 
   const {id} = req.params;

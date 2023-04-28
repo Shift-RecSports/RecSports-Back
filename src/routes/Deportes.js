@@ -4,7 +4,7 @@ import shortid from 'shortid';
 //GET todos los deportes
 export const getDeportes = {
     method: 'GET',
-    path: '/deportes',
+    path: '/api/deportes',
     handler: async (req, h) => {
       const { results } = await db.query(
         `SELECT * FROM Deportes`,
@@ -16,7 +16,7 @@ export const getDeportes = {
 //GET 1 deporte
 export const getDeporte = {
   method: 'GET',
-  path: '/deportes/{id}',
+  path: '/api/deportes/{id}',
   handler: async (req, h) => {
     const {id} = req.params;
     const { results } = await db.query(
@@ -30,7 +30,7 @@ export const getDeporte = {
 //CREAR 1 deporte
 export const postDeporte = {
   method: 'POST',
-  path: '/deportes',
+  path: '/api/deportes',
   handler: async (req, h) => {
 
     // Body example
@@ -59,7 +59,7 @@ export const postDeporte = {
 //UPDATE 1 deporte
 export const updateDeporte = {
   method: 'PUT',
-  path: '/deportes/{id}',
+  path: '/api/deportes/{id}',
   handler: async (req, h) => {
 
     const {id} = req.params;
@@ -91,7 +91,7 @@ export const updateDeporte = {
 //DELETE  1 deporte
 export const deleteDeporte = {
   method: 'DELETE',
-  path: '/deportes/{id}',
+  path: '/api/deportes/{id}',
   handler: async (req, h) => {
 
     const {id} = req.params;

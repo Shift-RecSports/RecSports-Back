@@ -4,7 +4,7 @@ import { default as short } from 'short-uuid';
 //GET todos los registros de Gimnasio
 export const getRegistrosGimnasio = {
   method: 'GET',
-    path: '/registros-gimnasio',
+    path: '/api/registros-gimnasio',
     handler: async (req, h) => {
       const { results } = await db.query(
         `SELECT *,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha
@@ -32,7 +32,7 @@ export const getRegistroGimnasio = {
 //CREAR 1 registro degimnasio
 export const postRegistroGimnasio = {
   method: 'POST',
-    path: '/registros-gimnasio',
+    path: '/api/registros-gimnasio',
     handler: async (req, h) => {
       // Body example
       // {
@@ -61,7 +61,7 @@ export const postRegistroGimnasio = {
 //UPDATE 1 deporte
 export const updateRegistroGimnasio = {
   method: 'PUT',
-  path: '/registros-gimnasio/{id}',
+  path: '/api/registros-gimnasio/{id}',
   handler: async (req, h) => {
     const {id} = req.params;
     const body = JSON.parse(req.payload);
@@ -91,7 +91,7 @@ export const updateRegistroGimnasio = {
 //DELETE  1 deporte
 export const deleteRegistroGimnasio = {
 method: 'DELETE',
-path: '/registros-gimnasio/{id}',
+path: '/api/registros-gimnasio/{id}',
 handler: async (req, h) => {
 
   const {id} = req.params;
