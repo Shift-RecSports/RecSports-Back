@@ -106,3 +106,48 @@ handler: async (req, h) => {
 };
 
 
+//GET Tabla de Concurrencias Aforo Gimnasio
+export const getConcurrenciasAforoGimnasio = {
+  method: 'GET',
+    path: '/api/concurrencias-aforo-gimnasio/{num_semana}/{dia_semana}',
+    handler: async (req, h) => {
+
+      const {num_semana} = req.params;
+      const {dia_semana} = req.params;
+      try{
+        const { results } = await db.query(
+          `SELECT 
+          Historial.hora_inicio, 
+          Historial.hora_inicio + INTERVAL 1 HOUR as hora_fin,
+          CASE 
+            WHEN HOUR(NOW()) = HOUR(Historial.hora_inicio) THEN HOUR(Historial.hora_inicio)
+            ELSE 0
+          END as realtime,
+          AVG(Historial.contador) as promedio_contador,
+          Gimnasio.aforo
+        FROM 
+          Historial
+          INNER JOIN DiasSemana ON Historial.dia_semana = DiasSemana.id
+          INNER JOIN Gimnasio ON LEFT(Historial.id, 7) = Gimnasio.id
+          LEFT JOIN RegistrosGimnasio ON LEFT(Historial.id, 7) = LEFT(RegistrosGimnasio.id, 7) AND RegistrosGimnasio.salida IS NULL
+        WHERE 
+          Historial.num_semana = ? 
+          AND Historial.dia_semana = ?
+        GROUP BY 
+          Historial.hora_inicio, Gimnasio.aforo;`,
+
+    [num_semana, dia_semana]
+        );
+        return results;
+
+      }
+
+      catch(e){
+        console.log(e)
+      }
+      return null;
+     
+    }
+};
+
+
