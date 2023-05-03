@@ -44,16 +44,13 @@ export const postHistorial = {
     // }
     const body = JSON.parse(req.payload);
     const id = short.generate(); //22 character uuid
-    try {
+   
       await db.query(
         `INSERT INTO Historial(id, num_semana, fecha, hora_inicio, contador, dia_semana) VALUES(?,?,DATE(?),?,?,?)`,
         [id, body.num_semana, body.fecha, body.hora_inicio, body.contador, body.dia_semana]
 
       );
-    }
-    catch (e) {
-      console.log(e)
-    }
+   
     const { results } = await db.query(
       `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha FROM Historial WHERE id = ?`,
       [id]
@@ -77,15 +74,12 @@ export const updateHistorial = {
     //     "salida": null,
     //     "fecha": "2023-04-28"
     // }
-    try {
+   
       await db.query(
         `UPDATE RegistrosGimnasio SET matricula = ?, entrada = ?, salida = ?, fecha = ?WHERE id = ? ;`,
         [body.matricula, body.entrada, body.salida, body.fecha, id],
       );
-    }
-    catch (e) {
-      console.log(e)
-    }
+    
     const { results } = await db.query(
       `SELECT *,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha FROM RegistrosGimnasio WHERE id = ? ;`,
       [id],
