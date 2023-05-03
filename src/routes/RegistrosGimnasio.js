@@ -107,49 +107,21 @@ export const deleteRegistroGimnasio = {
 };
 
 
-//GET Tabla de Concurrencias Aforo Gimnasio
-export const getConcurrenciasAforoGimnasio = {
+//GET Aforo Actual
+export const getAforoActual = {
   method: 'GET',
-  path: '/api/concurrencias-aforo-gimnasio/{num_semana}/{dia_semana}',
+  path: '/api/aforo-actual',
   handler: async (req, h) => {
-
-    const { num_semana } = req.params;
-    const { dia_semana } = req.params;
-    try {
-      const { results } = await db.query(
-        `SELECT 
-    hora_inicio, 
-    ADDTIME(hora_inicio, '01:00:00') as hora_fin,
-    AVG(contador) as historico,
-    CASE 
-        WHEN HOUR(NOW()) = HOUR(hora_inicio) AND MINUTE(NOW()) >= MINUTE(hora_inicio) THEN 
-            (SELECT COUNT(*) FROM RegistrosGimnasio rg WHERE rg.salida IS NULL) 
-        ELSE 
-            NULL 
-    END as actual
-FROM 
-    Historial
-WHERE 
-    num_semana = ? 
-    AND dia_semana = ?
-GROUP BY 
-    hora_inicio
-ORDER BY 
-    hora_inicio;
-`,
-
-        [num_semana, dia_semana]
-      );
-      return results;
-
-    }
-
-    catch (e) {
-      console.log(e)
-    }
-    return null;
-
+    const { results } = await db.query(
+    `SELECT 
+    COUNT(*) as actual,
+    (SELECT aforo FROM Gimnasio WHERE dia_semana = 1) as aforo
+    FROM 
+    RegistrosGimnasio rg
+    WHERE 
+    rg.salida IS NULL;`
+  
+    );
+    return results[0];
   }
 };
-
-
