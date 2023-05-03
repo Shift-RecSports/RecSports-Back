@@ -13,3 +13,9 @@ generates UUIDs using a combination of timestamp, random bits, and base57 encodi
 npm install short-uuid
 import { default as short } from 'short-uuid';
  const id = short.generate();
+
+
+# multer to manage images
+Multer is a Node.js middleware for handling multipart/form-data, which is primarily used for uploading files. It is used in conjunction with Express.js, a popular web framework for Node.js.
+npm install multer
+

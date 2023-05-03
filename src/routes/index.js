@@ -1,6 +1,7 @@
 import { deleteDeporte, getDeportes, getDeporte, postDeporte, updateDeporte } from "./Deportes";
 import { getEspacios, getEspacio, postEspacio, updateEspacio, deleteEspacio} from "./Espacios";
 import { getHistoriales, getHistorial, postHistorial, updateHistorial, deleteHistorial,  getConcurrenciasAforoGimnasio  } from "./Historial";
+import { uploadImage } from "./Images";
 import { deleteNoticia, getNoticia, getNoticias, postNoticia, updateNoticia } from "./Noticias";
 import { getRegistrosGimnasio, getRegistroGimnasio, postRegistroGimnasio, updateRegistroGimnasio, deleteRegistroGimnasio, getAforoActual } from "./RegistrosGimnasio";
 
@@ -40,7 +41,9 @@ export default[
     getNoticia,
     postNoticia,
     updateNoticia,
-    deleteNoticia
+    deleteNoticia,
+
+    uploadImage
 
     
 ]
