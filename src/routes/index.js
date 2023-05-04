@@ -4,7 +4,7 @@ import { getHistoriales, getHistorial, postHistorial, updateHistorial, deleteHis
 import { uploadImage } from "./Images";
 import { deleteNoticia, getNoticia, getNoticias, postNoticia, updateNoticia } from "./Noticias";
 import { getRegistrosGimnasio, getRegistrosGimnasioFecha, getRegistroGimnasio, postRegistroGimnasio, postRegistroGimnasioMatricula, updateRegistroGimnasio, updateRegistroGimnasioMatricula, deleteRegistroGimnasio, getAforoActual } from "./RegistrosGimnasio";
-import { getReservaciones, getReservacionesMatricula, getReservacion, postReservacion, updateReservacion, deleteReservacion } from "./Reservaciones";
+import { getReservaciones, getReservacionesMatricula, getReservacionesDeporteFecha, getReservacion, postReservacion, updateReservacion, deleteReservacion } from "./Reservaciones";
 
 import { getUsuario } from "./Usuarios";
 
@@ -45,6 +45,7 @@ export default[
 
     getReservaciones,
     getReservacionesMatricula,
+    getReservacionesDeporteFecha,
     getReservacion,
     postReservacion,
     updateReservacion,

@@ -8,11 +8,14 @@ export const getReservaciones = {
   path: '/api/reservaciones',
   handler: async (req, h) => {
     const { results } = await db.query(
-      `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha FROM Reservaciones;`,
+      `SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha
+      FROM Reservaciones
+      JOIN Espacios ON Reservaciones.espacio = Espacios.id;`,
     );
     return results;
   }
 };
+
 
 //GET todass las reservaciones por matricula
 export const getReservacionesMatricula = {
@@ -21,8 +24,36 @@ export const getReservacionesMatricula = {
   handler: async (req, h) => {
     const { matricula } = req.params;
     const { results } = await db.query(
-      `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha FROM Reservaciones WHERE matricula_alumno = ?;`,
+      `SELECT r.*, e.zona, e.nombre as espacio_nombre, DATE_FORMAT(r.fecha, '%Y-%m-%d') AS fecha
+      FROM Reservaciones r
+      JOIN Espacios e ON r.espacio = e.id
+      WHERE r.matricula_alumno = ?;`,
       [matricula]
+    );
+    return results;
+  }
+};
+
+//GET todass las reservaciones por deporte
+export const getReservacionesDeporteFecha = {
+  method: 'GET',
+  path: '/api/reservaciones/deporte={deporte}&fecha={fecha}',
+  handler: async (req, h) => {
+    const { deporte } = req.params;
+    const { fecha } = req.params;
+
+    try{
+
+    }
+    catch(e){
+      console.log()
+    }
+    const { results } = await db.query(
+      `SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha
+      FROM Reservaciones
+      JOIN Espacios ON Reservaciones.espacio = Espacios.id
+      WHERE Reservaciones.fecha = ? AND Espacios.deporte = ?;`,
+      [fecha, deporte]
     );
     return results;
   }
@@ -35,7 +66,10 @@ export const getReservacion = {
   handler: async (req, h) => {
     const { id } = req.params;
     const { results } = await db.query(
-      `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha FROM Reservaciones WHERE id = ?`,
+      `SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha
+      FROM Reservaciones
+      JOIN Espacios ON Reservaciones.espacio = Espacios.id
+      WHERE Reservaciones.id = ?;`,
       [id]
     );
     return results[0];
@@ -65,7 +99,10 @@ export const postReservacion = {
       );
 
     const { results } = await db.query(
-      `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha FROM Reservaciones WHERE id = ?`,
+      `SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha
+      FROM Reservaciones
+      JOIN Espacios ON Reservaciones.espacio = Espacios.id
+      WHERE Reservaciones.id = ?;`,
       [id]
     );
 
@@ -96,7 +133,10 @@ export const updateReservacion = {
     );
     
     const { results } = await db.query(
-      `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha FROM Reservaciones WHERE id = ?;`,
+      `SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha
+      FROM Reservaciones
+      JOIN Espacios ON Reservaciones.espacio = Espacios.id
+      WHERE Reservaciones.id = ?;`,
       [id],
     );
     return results[0];
@@ -121,21 +161,3 @@ export const deleteReservacion = {
 };
 
 
-//GET Aforo Actual
-export const getAforoActual = {
-  method: 'GET',
-  path: '/api/aforo-actual',
-  handler: async (req, h) => {
-    const { results } = await db.query(
-    `SELECT 
-    COUNT(*) as actual,
-    (SELECT aforo FROM Gimnasio WHERE dia_semana = 1) as aforo
-    FROM 
-    RegistrosGimnasio rg
-    WHERE 
-    rg.salida IS NULL;`
-  
-    );
-    return results[0];
-  }
-};
