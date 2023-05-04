@@ -6,6 +6,7 @@ export const getRegistrosGimnasio = {
   method: 'GET',
   path: '/api/registros-gimnasio',
   handler: async (req, h) => {
+    console.log("GET ALL REGISTROS")
     const { results } = await db.query(
       `SELECT *,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha
         FROM RegistrosGimnasio;`,
@@ -32,11 +33,10 @@ export const getRegistroGimnasio = {
 //GET Registros Gimnasio por Fecha 
 export const getRegistrosGimnasioFecha = {
   method: 'GET',
-  path: '/api/registros-gimnasio/fecha/{fecha}/{offset}',
+  path: '/api/registros-gimnasio/fecha={fecha}&offset={offset}',
   handler: async (req, h) => {
     const { fecha } = req.params;
     const offset = parseInt(req.params.offset);
-    
     const { results } = await db.query(
     `SELECT rg.id,rg.matricula, u.nombre, rg.entrada, rg.salida,DATE_FORMAT(rg.fecha, '%Y-%m-%d') as fecha
     FROM RegistrosGimnasio rg
@@ -120,7 +120,7 @@ export const postRegistroGimnasioMatricula = {
   }
 };
 
-//UPDATE 1 deporte
+//UPDATE 1 registro de gimnasio
 export const updateRegistroGimnasio = {
   method: 'PUT',
   path: '/api/registros-gimnasio/{id}',
