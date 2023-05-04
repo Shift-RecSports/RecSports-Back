@@ -13,6 +13,22 @@ export const getEspacios = {
     }
   };
 
+  //GET todos los espacios de un deporte
+export const getEspaciosDeporte = {
+  method: 'GET',
+  path: '/api/espacios/deporte={deporte}',
+  handler: async (req, h) => {
+
+    
+  const {deporte} = req.params;
+  const { results } = await db.query(
+    `SELECT Espacios.* FROM Espacios JOIN Deportes ON Espacios.deporte = Deportes.id WHERE Deportes.id = ?;`,
+    [deporte]
+  );
+    return results;
+  }
+};
+
 //GET 1 espacio
 export const getEspacio = {
   method: 'GET',

@@ -2,28 +2,40 @@ import { db } from "../database";
 import { default as short } from 'short-uuid';
 
 
-//GET todos los registros de Gimnasio
+//GET todass las reservaciones
 export const getReservaciones = {
   method: 'GET',
   path: '/api/reservaciones',
   handler: async (req, h) => {
     const { results } = await db.query(
-      `SELECT *
-        FROM Reservaciones;`,
+      `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha FROM Reservaciones;`,
     );
     return results;
   }
 };
 
-//GET 1 registro de gimnasio
-export const getRegistroGimnasio = {
+//GET todass las reservaciones por matricula
+export const getReservacionesMatricula = {
   method: 'GET',
-  path: '/registros-gimnasio/{id}',
+  path: '/api/reservaciones/matricula={matricula}',
+  handler: async (req, h) => {
+    const { matricula } = req.params;
+    const { results } = await db.query(
+      `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha FROM Reservaciones WHERE matricula_alumno = ?;`,
+      [matricula]
+    );
+    return results;
+  }
+};
+
+//GET 1 reservacion
+export const getReservacion = {
+  method: 'GET',
+  path: '/api/reservaciones/{id}',
   handler: async (req, h) => {
     const { id } = req.params;
     const { results } = await db.query(
-      `SELECT * ,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha
-      FROM RegistrosGimnasio WHERE id= ?;`,
+      `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha FROM Reservaciones WHERE id = ?`,
       [id]
     );
     return results[0];
@@ -31,75 +43,76 @@ export const getRegistroGimnasio = {
 };
 
 //CREAR 1 registro degimnasio
-export const postRegistroGimnasio = {
+export const postReservacion = {
   method: 'POST',
-  path: '/api/registros-gimnasio',
+  path: '/api/reservaciones',
   handler: async (req, h) => {
     // Body example
-    // {
-    //   "id": "20",
-    //   "matricula": "A01570656",
-    //   "entrada": "08:00:00",
-    //   "salida": "10:00:00",
-    //   "fecha": "2023-04-27"
-    // }
+  //   {
+  //     "hora_seleccionada": "08:00:00",
+  //     "matricula_alumno": "A01570656",
+  //     "fecha": "2023-05-04",
+  //     "espacio": "E1",
+  //     "estatus": 1
+  // }
     const body = JSON.parse(req.payload);
     const id = short.generate(); //22 character uuid
 
-    await db.query(
-      `INSERT INTO RegistrosGimnasio(id, matricula, entrada, salida, fecha) VALUES(?,?, ?, ?, DATE(?))`,
-      [id, body.matricula, body.entrada, body.salida, body.fecha]
-    );
+  
+      await db.query(
+        `INSERT INTO Reservaciones(id, hora_seleccionada, matricula_alumno, fecha, espacio, estatus) VALUES(?,?, ?, ?, ?, ?)`,
+        [id, body.hora_seleccionada, body.matricula_alumno, body.fecha, body.espacio, body.estatus]
+      );
+
     const { results } = await db.query(
-      `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha FROM Registrosgimnasio WHERE id = ?`,
+      `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha FROM Reservaciones WHERE id = ?`,
       [id]
     );
 
     return results[0]
+    
   }
 };
 
 //UPDATE 1 deporte
-export const updateRegistroGimnasio = {
+export const updateReservacion = {
   method: 'PUT',
-  path: '/api/registros-gimnasio/{id}',
+  path: '/api/reservaciones/{id}',
   handler: async (req, h) => {
     const { id } = req.params;
     const body = JSON.parse(req.payload);
-    // Body example
-    //   {
-    //     "matricula": "A01570656",
-    //     "entrada": "19:00:00",
-    //     "salida": null,
-    //     "fecha": "2023-04-28"
-    // }
-    try {
-      await db.query(
-        `UPDATE RegistrosGimnasio SET matricula = ?, entrada = ?, salida = ?, fecha = ?WHERE id = ? ;`,
-        [body.matricula, body.entrada, body.salida, body.fecha, id],
-      );
-    }
-    catch (e) {
-      console.log(e)
-    }
+      // Body example
+  //   {
+  //     "hora_seleccionada": "08:00:00",
+  //     "matricula_alumno": "A01570656",
+  //     "fecha": "2023-05-04",
+  //     "espacio": "E1",
+  //     "estatus": 1
+  // }
+      
+    await db.query(
+      `UPDATE Reservaciones SET hora_seleccionada = ?, matricula_alumno = ?, fecha = ?, espacio = ?, estatus = ? WHERE id = ? ;`,
+      [body.hora_seleccionada, body.matricula_alumno, body.fecha, body.espacio, body.estatus, id],
+    );
+    
     const { results } = await db.query(
-      `SELECT *,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha FROM RegistrosGimnasio WHERE id = ? ;`,
+      `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha FROM Reservaciones WHERE id = ?;`,
       [id],
     );
     return results[0];
   }
 };
 
-//DELETE  1 deporte
-export const deleteRegistroGimnasio = {
+//DELETE  1 reservacion
+export const deleteReservacion = {
   method: 'DELETE',
-  path: '/api/registros-gimnasio/{id}',
+  path: '/api/reservaciones/{id}',
   handler: async (req, h) => {
 
     const { id } = req.params;
 
     await db.query(
-      `DELETE FROM RegistrosGimnasio WHERE id = ?;`,
+      `DELETE FROM Reservaciones WHERE id = ?;`,
       [id],
     );
 

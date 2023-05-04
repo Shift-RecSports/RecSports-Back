@@ -1,9 +1,10 @@
 import { deleteDeporte, getDeportes, getDeporte, postDeporte, updateDeporte } from "./Deportes";
-import { getEspacios, getEspacio, postEspacio, updateEspacio, deleteEspacio} from "./Espacios";
+import { getEspacios, getEspaciosDeporte, getEspacio, postEspacio, updateEspacio, deleteEspacio} from "./Espacios";
 import { getHistoriales, getHistorial, postHistorial, updateHistorial, deleteHistorial,  getConcurrenciasAforoGimnasio  } from "./Historial";
 import { uploadImage } from "./Images";
 import { deleteNoticia, getNoticia, getNoticias, postNoticia, updateNoticia } from "./Noticias";
-import { getRegistrosGimnasio, getRegistrosGimnasioFecha, getRegistroGimnasio, postRegistroGimnasio, postRegistroGimnasioMatricula, updateRegistroGimnasio, deleteRegistroGimnasio, getAforoActual } from "./RegistrosGimnasio";
+import { getRegistrosGimnasio, getRegistrosGimnasioFecha, getRegistroGimnasio, postRegistroGimnasio, postRegistroGimnasioMatricula, updateRegistroGimnasio, updateRegistroGimnasioMatricula, deleteRegistroGimnasio, getAforoActual } from "./RegistrosGimnasio";
+import { getReservaciones, getReservacionesMatricula, getReservacion, postReservacion, updateReservacion, deleteReservacion } from "./Reservaciones";
 
 import { getUsuario } from "./Usuarios";
 
@@ -22,15 +23,18 @@ export default[
     postRegistroGimnasio, 
     postRegistroGimnasioMatricula,
     updateRegistroGimnasio,
+    updateRegistroGimnasioMatricula,
     deleteRegistroGimnasio,
     getAforoActual,
     
 
     getEspacios,
+    getEspaciosDeporte,
     getEspacio,
     postEspacio,
     updateEspacio,
     deleteEspacio,
+    
 
     getHistoriales,
     getHistorial,
@@ -38,6 +42,13 @@ export default[
     updateHistorial,
     deleteHistorial,
     getConcurrenciasAforoGimnasio,
+
+    getReservaciones,
+    getReservacionesMatricula,
+    getReservacion,
+    postReservacion,
+    updateReservacion,
+    deleteReservacion,
 
     getNoticias,
     getNoticia,

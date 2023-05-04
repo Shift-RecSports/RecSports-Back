@@ -17,7 +17,7 @@ export const getRegistrosGimnasio = {
 //GET 1 registro de gimnasio
 export const getRegistroGimnasio = {
   method: 'GET',
-  path: '/registros-gimnasio/{id}',
+  path: '/api/registros-gimnasio/{id}',
   handler: async (req, h) => {
     const { id } = req.params;
     const { results } = await db.query(
@@ -45,7 +45,6 @@ export const getRegistrosGimnasioFecha = {
     LIMIT 50
     OFFSET ?;`,
     [fecha,offset]
-  
     );
    
     return results;
@@ -90,32 +89,21 @@ export const postRegistroGimnasioMatricula = {
     // {
     //   "matricula": "A01570656",
     // }
-    try{
     const body = JSON.parse(req.payload);
     console.log(body.matricula)
     const id = short.generate(); //22 character uuid
-    //console.log(new Date().toISOString().split('T')[0]);
-    const fecha = new Date().toISOString().split('T')[0];
-    console.log(fecha)
-
-    }
-    catch(e){
-      console.log(e)
-
-    }
-    
    
     await db.query(
-      `INSERT INTO RegistrosGimnasio(id, matricula, entrada, salida, fecha) VALUES(?,?, ?, NULL, DATE(?))`,
-      [id, body.matricula, body.entrada,fecha]
+      `INSERT INTO RegistrosGimnasio(id, matricula, entrada, salida, fecha) VALUES(?,?, CURTIME(), NULL, CURDATE())`,
+      [id, body.matricula]
     );
     const { results } = await db.query(
       `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha FROM Registrosgimnasio WHERE id = ?`,
       [id]
     );
 
-    // return results[0]
-    return null
+     return results[0]
+   
   }
 };
 
@@ -133,20 +121,47 @@ export const updateRegistroGimnasio = {
     //     "salida": null,
     //     "fecha": "2023-04-28"
     // }
-    try {
-      await db.query(
-        `UPDATE RegistrosGimnasio SET matricula = ?, entrada = ?, salida = ?, fecha = ?WHERE id = ? ;`,
-        [body.matricula, body.entrada, body.salida, body.fecha, id],
-      );
-    }
-    catch (e) {
-      console.log(e)
-    }
+    
+    await db.query(
+      `UPDATE RegistrosGimnasio SET matricula = ?, entrada = ?, salida = ?, fecha = ?WHERE id = ? ;`,
+      [body.matricula, body.entrada, body.salida, body.fecha, id],
+    );
+   
     const { results } = await db.query(
       `SELECT *,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha FROM RegistrosGimnasio WHERE id = ? ;`,
       [id],
     );
     return results[0];
+  }
+};
+
+//UPDATE 1 registro de gimnasio con matricula 
+export const updateRegistroGimnasioMatricula = {
+  method: 'PUT',
+  path: '/api/registros-gimnasio/matricula',
+  handler: async (req, h) => {
+    const body = JSON.parse(req.payload);
+    // Body example
+    // {
+    //   "matricula": "A01570656",
+    // }
+    const { results: results1 } = await db.query(
+      `SELECT *,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha FROM RegistrosGimnasio WHERE matricula = ? AND salida IS NULL ;`,
+      [body.matricula],
+    );
+    const id = results1[0]['id'];
+    
+    await db.query(
+      `UPDATE RegistrosGimnasio SET salida = CURTIME() WHERE id = ?`,
+      [id],
+    );
+        
+    const { results: results2 } = await db.query(
+      `SELECT *,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha FROM RegistrosGimnasio WHERE id = ? ;`,
+      [id],
+    );
+    return results2[0];
+
   }
 };
 
