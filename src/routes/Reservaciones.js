@@ -1,14 +1,15 @@
 import { db } from "../database";
 import { default as short } from 'short-uuid';
 
+
 //GET todos los registros de Gimnasio
-export const getRegistrosGimnasio = {
+export const getReservaciones = {
   method: 'GET',
-  path: '/api/registros-gimnasio',
+  path: '/api/reservaciones',
   handler: async (req, h) => {
     const { results } = await db.query(
-      `SELECT *,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha
-        FROM RegistrosGimnasio;`,
+      `SELECT *
+        FROM Reservaciones;`,
     );
     return results;
   }
@@ -29,31 +30,7 @@ export const getRegistroGimnasio = {
   }
 };
 
-//GET Registros Gimnasio por Fecha 
-export const getRegistrosGimnasioFecha = {
-  method: 'GET',
-  path: '/api/registros-gimnasio/fecha/{fecha}/{pagina}',
-  handler: async (req, h) => {
-    const { fecha } = req.params;
-    const pagina = parseInt(req.params.pagina);
-    
-    const { results } = await db.query(
-    `SELECT rg.id,rg.matricula, u.nombre, rg.entrada, rg.salida,DATE_FORMAT(rg.fecha, '%Y-%m-%d') as fecha
-    FROM RegistrosGimnasio rg
-    INNER JOIN Usuarios u ON rg.matricula = u.matricula
-    WHERE rg.fecha = ?
-    ORDER BY rg.entrada DESC
-    LIMIT 50
-    OFFSET ?;`,
-    [fecha, pagina]
-  
-    );
-   
-    return results;
-  }
-};
-
-//CREAR 1 registro de gimnasio
+//CREAR 1 registro degimnasio
 export const postRegistroGimnasio = {
   method: 'POST',
   path: '/api/registros-gimnasio',
@@ -79,44 +56,6 @@ export const postRegistroGimnasio = {
     );
 
     return results[0]
-  }
-};
-
-//CREAR 1 registro de gimnasio con solo matricula 
-export const postRegistroGimnasioMatricula = {
-  method: 'POST',
-  path: '/api/registros-gimnasio/matricula',
-  handler: async (req, h) => {
-    // Body example
-    // {
-    //   "matricula": "A01570656",
-    // }
-    try{
-    const body = JSON.parse(req.payload);
-    console.log(body.matricula)
-    const id = short.generate(); //22 character uuid
-    //console.log(new Date().toISOString().split('T')[0]);
-    const fecha = new Date().toISOString().split('T')[0];
-    console.log(fecha)
-
-    }
-    catch(e){
-      console.log(e)
-
-    }
-    
-   
-    await db.query(
-      `INSERT INTO RegistrosGimnasio(id, matricula, entrada, salida, fecha) VALUES(?,?, ?, NULL, DATE(?))`,
-      [id, body.matricula, body.entrada,fecha]
-    );
-    const { results } = await db.query(
-      `SELECT *, DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha FROM Registrosgimnasio WHERE id = ?`,
-      [id]
-    );
-
-    // return results[0]
-    return null
   }
 };
 

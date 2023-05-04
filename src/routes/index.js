@@ -3,7 +3,7 @@ import { getEspacios, getEspacio, postEspacio, updateEspacio, deleteEspacio} fro
 import { getHistoriales, getHistorial, postHistorial, updateHistorial, deleteHistorial,  getConcurrenciasAforoGimnasio  } from "./Historial";
 import { uploadImage } from "./Images";
 import { deleteNoticia, getNoticia, getNoticias, postNoticia, updateNoticia } from "./Noticias";
-import { getRegistrosGimnasio, getRegistroGimnasio, postRegistroGimnasio, updateRegistroGimnasio, deleteRegistroGimnasio, getAforoActual } from "./RegistrosGimnasio";
+import { getRegistrosGimnasio, getRegistrosGimnasioFecha, getRegistroGimnasio, postRegistroGimnasio, postRegistroGimnasioMatricula, updateRegistroGimnasio, deleteRegistroGimnasio, getAforoActual } from "./RegistrosGimnasio";
 
 import { getUsuario } from "./Usuarios";
 
@@ -17,8 +17,10 @@ export default[
     deleteDeporte,
 
     getRegistrosGimnasio,
+    getRegistrosGimnasioFecha,
     getRegistroGimnasio,
     postRegistroGimnasio, 
+    postRegistroGimnasioMatricula,
     updateRegistroGimnasio,
     deleteRegistroGimnasio,
     getAforoActual,
