@@ -32,10 +32,10 @@ export const getRegistroGimnasio = {
 //GET Registros Gimnasio por Fecha 
 export const getRegistrosGimnasioFecha = {
   method: 'GET',
-  path: '/api/registros-gimnasio/fecha/{fecha}/{pagina}',
+  path: '/api/registros-gimnasio/fecha/{fecha}/{offset}',
   handler: async (req, h) => {
     const { fecha } = req.params;
-    const pagina = parseInt(req.params.pagina);
+    const offset = parseInt(req.params.offset);
     
     const { results } = await db.query(
     `SELECT rg.id,rg.matricula, u.nombre, rg.entrada, rg.salida,DATE_FORMAT(rg.fecha, '%Y-%m-%d') as fecha
@@ -45,7 +45,7 @@ export const getRegistrosGimnasioFecha = {
     ORDER BY rg.entrada DESC
     LIMIT 50
     OFFSET ?;`,
-    [fecha, pagina]
+    [fecha,offset]
   
     );
    
