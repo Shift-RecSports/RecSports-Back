@@ -8,9 +8,10 @@ export const getReservaciones = {
   path: '/api/reservaciones',
   handler: async (req, h) => {
     const { results } = await db.query(
-      `SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha
+      `SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, Deportes.nombre AS deporte_nombre, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha
       FROM Reservaciones
-      JOIN Espacios ON Reservaciones.espacio = Espacios.id;`,
+      JOIN Espacios ON Reservaciones.espacio = Espacios.id
+      JOIN Deportes ON Espacios.deporte = Deportes.id;`,
     );
     return results;
   }
@@ -24,9 +25,10 @@ export const getReservacionesMatricula = {
   handler: async (req, h) => {
     const { matricula } = req.params;
     const { results } = await db.query(
-      `SELECT r.*, e.zona, e.nombre as espacio_nombre, DATE_FORMAT(r.fecha, '%Y-%m-%d') AS fecha
+      `SELECT r.*, e.zona, e.nombre as espacio_nombre, d.nombre as deporte_nombre, DATE_FORMAT(r.fecha, '%Y-%m-%d') AS fecha
       FROM Reservaciones r
       JOIN Espacios e ON r.espacio = e.id
+      JOIN Deportes d ON e.deporte = d.id
       WHERE r.matricula_alumno = ?;`,
       [matricula]
     );
@@ -49,10 +51,11 @@ export const getReservacionesDeporteFecha = {
       console.log()
     }
     const { results } = await db.query(
-      `SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha
+      `SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, Deportes.nombre AS deporte_nombre, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha
       FROM Reservaciones
       JOIN Espacios ON Reservaciones.espacio = Espacios.id
-      WHERE Reservaciones.fecha = ? AND Espacios.deporte = ?;`,
+      JOIN Deportes ON Espacios.deporte = Deportes.id
+      WHERE Reservaciones.fecha = ? AND Deportes.id = ?;`,
       [fecha, deporte]
     );
     return results;
@@ -66,10 +69,11 @@ export const getReservacion = {
   handler: async (req, h) => {
     const { id } = req.params;
     const { results } = await db.query(
-      `SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha
-      FROM Reservaciones
-      JOIN Espacios ON Reservaciones.espacio = Espacios.id
-      WHERE Reservaciones.id = ?;`,
+      `SELECT r.*, e.zona, e.nombre AS espacio_nombre, d.nombre AS deporte_nombre, DATE_FORMAT(r.fecha, '%Y-%m-%d') AS fecha
+      FROM Reservaciones r
+      JOIN Espacios e ON r.espacio = e.id
+      JOIN Deportes d ON e.deporte = d.id
+      WHERE r.id = ?;`,
       [id]
     );
     return results[0];
@@ -99,10 +103,11 @@ export const postReservacion = {
       );
 
     const { results } = await db.query(
-      `SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha
-      FROM Reservaciones
-      JOIN Espacios ON Reservaciones.espacio = Espacios.id
-      WHERE Reservaciones.id = ?;`,
+      `SELECT r.*, e.zona, e.nombre AS espacio_nombre, d.nombre AS deporte_nombre, DATE_FORMAT(r.fecha, '%Y-%m-%d') AS fecha
+      FROM Reservaciones r
+      JOIN Espacios e ON r.espacio = e.id
+      JOIN Deportes d ON e.deporte = d.id
+      WHERE r.id = ?;`,
       [id]
     );
 
@@ -133,10 +138,11 @@ export const updateReservacion = {
     );
     
     const { results } = await db.query(
-      `SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, DATE_FORMAT(fecha, '%Y-%m-%d') AS fecha
-      FROM Reservaciones
-      JOIN Espacios ON Reservaciones.espacio = Espacios.id
-      WHERE Reservaciones.id = ?;`,
+      `SELECT r.*, e.zona, e.nombre AS espacio_nombre, d.nombre AS deporte_nombre, DATE_FORMAT(r.fecha, '%Y-%m-%d') AS fecha
+      FROM Reservaciones r
+      JOIN Espacios e ON r.espacio = e.id
+      JOIN Deportes d ON e.deporte = d.id
+      WHERE r.id = ?;`,
       [id],
     );
     return results[0];
