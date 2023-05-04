@@ -6,7 +6,6 @@ export const getRegistrosGimnasio = {
   method: 'GET',
   path: '/api/registros-gimnasio',
   handler: async (req, h) => {
-    console.log("GET ALL REGISTROS")
     const { results } = await db.query(
       `SELECT *,DATE_FORMAT(fecha, '%Y-%m-%d')AS fecha
         FROM RegistrosGimnasio;`,
