@@ -34,23 +34,21 @@ export const postNoticia = {
   handler: async (req, h) => {
 
     // Body example
-    // {
-    //   "fecha": "2023-05-02",
-    //   "horario": "09:00:00",
-    //   "url": "https://noticia1.com",
-    //   "imagen": "imagen1.jpg"
-    // }
+  //   {
+  //     "lugar": "Tecnológico de Monterrey",
+  //     "fecha": "2023-05-03",
+  //     "hora": "14:00:00",
+  //     "titulo": "Inauguración de nuevas áreas deportivas",
+  //     "imagen": "https://cdn.milenio.com/uploads/media/2019/04/30/borregos-estrena-estadio-espectaculo-hector.jpg",
+  //     "url": "https://example.com/noticias/1"
+  // }
     const body = JSON.parse(req.payload);
     const id = shortid.generate(); //9 characters
-    try{
+    
       await db.query(
-        `INSERT INTO Noticias (id, fecha, horario, url, imagen) VALUES (?,?,?,?,?);`,
-        [id, body.fecha, body.horario, body.url, body.imagen]
+        `INSERT INTO Noticias(id, lugar, fecha, hora, titulo, imagen, url) VALUES (?,?,?,?,?,?,?);`,
+        [id, body.lugar, body.fecha, body.hora, body.titulo, body.imagen, body.url]
       );
-    }
-    catch(e){
-      console.log(e)
-    }
     
 
     const {results} = await db.query(
@@ -70,16 +68,18 @@ export const updateNoticia = {
     const {id} = req.params;
     const body = JSON.parse(req.payload);
     // Body example
-    // {
-    //   "fecha": "2023-05-02",
-    //   "horario": "09:00:00",
-    //   "url": "https://noticia1.com",
-    //   "imagen": "imagen1.jpg"
-    // }
-
+  //   {
+  //     "lugar": "Tecnológico de Monterrey",
+  //     "fecha": "2023-05-03",
+  //     "hora": "14:00:00",
+  //     "titulo": "Inauguración de nuevas áreas deportivas",
+  //     "imagen": "https://cdn.milenio.com/uploads/media/2019/04/30/borregos-estrena-estadio-espectaculo-hector.jpg",
+  //     "url": "https://example.com/noticias/1"
+  // }
+  
       const update = await db.query(
-        `UPDATE Noticias SET fecha = ?, horario = ?, url = ?, imagen = ? WHERE id = ?;`,
-        [ body.fecha, body.horario, body.url, body.imagen,id],
+        `UPDATE Noticias SET lugar = ?, fecha = ?, hora = ?, titulo = ?, imagen = ?, url = ' WHERE id = ?;`,
+        [ body.lugar, body.fecha, body.hora, body.titulo,body.imagen, body.url, id],
       );
       
       const { results } = await db.query(
