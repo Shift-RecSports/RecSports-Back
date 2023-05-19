@@ -14,5 +14,5 @@ app.use("/api/espacios", espaciosRouter);
 
 
 app.listen(process.env.PORT, () => {
-  console.log("Server is up and running on PORT:", process.env.APP_PORT);
+  console.log("Server is up and running on PORT:", process.env.PORT);
 });
