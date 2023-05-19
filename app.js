@@ -7,6 +7,8 @@ const espaciosRouter = require("./api/espacios");
 
 // Middleware setup
 app.use(express.json());
+// Specify the directory where your static files are stored
+app.use(express.static("images"));
 
 // Routes
 app.use("/api/deportes", deportesRouter);
