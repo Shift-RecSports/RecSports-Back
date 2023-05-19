@@ -13,6 +13,6 @@ app.use("/api/deportes", deportesRouter);
 app.use("/api/espacios", espaciosRouter);
 
 
-app.listen(process.env.APP_PORT, () => {
+app.listen(process.env.PORT, () => {
   console.log("Server is up and running on PORT:", process.env.APP_PORT);
 });
