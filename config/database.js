@@ -1,15 +1,44 @@
-const {createPool} = require("mysql");
 require("dotenv").config();
+const { Client } = require('pg');
 
-const pool = createPool({
-    port:process.env.DB_PORT,
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    connectionLimit:10
-})
+// Replace the connection link with your own PostgreSQL connection details
+const connectionLink = process.env.CONNECTION_LINK;
 
-module.exports = pool;
+// Create a new PostgreSQL client
+const client = new Client({
+  connectionString: connectionLink,
+});
 
+// Connect to the database
+client.connect((err) => {
+    if (err) {
+      console.error('Error connecting to the database:', err);
+      return;
+    }
+    console.log('Connected to the database');
+  });
+  
+  // Define a helper function to execute queries and return only the rows
+  module.exports.queryRows = async (query, params) => {
+    try {
+      const result = await client.query(query, params);
+      return result.rows;
+    } catch (error) {
+      console.error('Error executing query:', error);
+      throw error;
+    }
+  };
+
+// Disconnect from the database
+module.exports.disconnect = () => {
+    client.end((error) => {
+      if (error) {
+        console.error('Error disconnecting from the database:', error);
+        return;
+      }
+      console.log('Disconnected from the database');
+    });
+  };
+  
+  module.exports = client;
 
