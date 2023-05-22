@@ -29,7 +29,7 @@ router.get("/:id", (req, res) => {
     }
     if (results.rows.length === 0) {
       return res.status(404).json({
-        message: "Espacio no encontrado",
+        message: "Gimnasio no encontrado",
       });
     }
     return res.status(200).json(results.rows[0]);

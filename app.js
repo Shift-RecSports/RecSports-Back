@@ -7,6 +7,8 @@ const espaciosRouter = require("./api/espacios");
 const historialRouter = require("./api/historial");
 const registroGimnasioRouter = require("./api/registros-gimnasio");
 const gimnasioRouter = require("./api/gimnasio");
+const usuariosRouter = require("./api/usuarios");
+
 
 
 
@@ -21,6 +23,8 @@ app.use("/api/espacios", espaciosRouter);
 app.use("/api/historial", historialRouter);
 app.use("/api/registros-gimnasio", registroGimnasioRouter);
 app.use("/api/gimnasio", gimnasioRouter);
+app.use("/api/usuarios", usuariosRouter);
+
 
 
 
