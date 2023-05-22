@@ -18,16 +18,6 @@ client.connect((err) => {
     console.log('Connected to the database');
   });
   
-  // Define a helper function to execute queries and return only the rows
-  module.exports.queryRows = async (query, params) => {
-    try {
-      const result = await client.query(query, params);
-      return result.rows;
-    } catch (error) {
-      console.error('Error executing query:', error);
-      throw error;
-    }
-  };
 
 // Disconnect from the database
 module.exports.disconnect = () => {

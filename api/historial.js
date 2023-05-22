@@ -76,7 +76,7 @@ router.put("/", (req, res) => {
 });
 
 
-//DELETE espacio
+//DELETE historial
 router.delete("/:id", (req, res) => {
   const id = req.params.id;
   client.query(  `DELETE FROM Historial WHERE id = $1`,
