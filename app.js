@@ -8,6 +8,8 @@ const historialRouter = require("./api/historial");
 const registroGimnasioRouter = require("./api/registros-gimnasio");
 const gimnasioRouter = require("./api/gimnasio");
 const usuariosRouter = require("./api/usuarios");
+const noticiasRouter = require("./api/usuarios");
+
 
 
 
@@ -16,6 +18,11 @@ const usuariosRouter = require("./api/usuarios");
 app.use(express.json());
 // Specify the directory where your static files are stored
 app.use(express.static("images"));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+ next();
+});
 
 // Routes
 app.use("/api/deportes", deportesRouter);
@@ -24,6 +31,7 @@ app.use("/api/historial", historialRouter);
 app.use("/api/registros-gimnasio", registroGimnasioRouter);
 app.use("/api/gimnasio", gimnasioRouter);
 app.use("/api/usuarios", usuariosRouter);
+app.use("/api/noticias", noticiasRouter);
 
 
 
