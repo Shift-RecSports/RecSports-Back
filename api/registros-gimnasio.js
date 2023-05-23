@@ -102,7 +102,7 @@ router.post("/", (req, res) => {
 router.post("/matricula", (req, res) => {
   const body = req.body;
   client.query(
-    `INSERT INTO RegistrosGimnasio (matricula, entrada, salida, fecha) VALUES ($1, to_char(current_timestamp AT TIME ZONE 'America/Monterrey', 'HH:MI:SS')::time, NULL, current_timestamp AT TIME ZONE 'America/Monterrey') RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
+    `INSERT INTO RegistrosGimnasio (matricula, entrada, salida, fecha) VALUES ($1, CURRENT_TIME ::time, NULL, CURRENT_DATE) RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
     [body.matricula],
     (error, results) => {
       if (error) {
@@ -142,7 +142,7 @@ router.put("/matricula", (req, res) => {
   const body = req.body;
   client.query(
     `UPDATE RegistrosGimnasio
-    SET salida = to_char(current_timestamp AT TIME ZONE 'America/Monterrey', 'HH:MI:SS')::time
+    SET salida = CURRENT_TIME ::time
     WHERE matricula = $1
       AND salida IS NULL
     RETURNING *,

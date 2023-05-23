@@ -8,10 +8,8 @@ const historialRouter = require("./api/historial");
 const registroGimnasioRouter = require("./api/registros-gimnasio");
 const gimnasioRouter = require("./api/gimnasio");
 const usuariosRouter = require("./api/usuarios");
-const noticiasRouter = require("./api/usuarios");
-
-
-
+const noticiasRouter = require("./api/noticias");
+const mapaRouter = require("./api/mapa");
 
 
 // Middleware setup
@@ -32,6 +30,8 @@ app.use("/api/registros-gimnasio", registroGimnasioRouter);
 app.use("/api/gimnasio", gimnasioRouter);
 app.use("/api/usuarios", usuariosRouter);
 app.use("/api/noticias", noticiasRouter);
+app.use("/api/mapa", mapaRouter);
+
 
 
 

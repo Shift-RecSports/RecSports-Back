@@ -75,7 +75,6 @@ router.put("/", (req, res) => {
   
 });
 
-
 //DELETE historial
 router.delete("/:id", (req, res) => {
   const id = req.params.id;
@@ -90,6 +89,42 @@ router.delete("/:id", (req, res) => {
     return res.status(200).json({});
   });
 });
+
+router.get("/concurrencias-aforo-gimnasio/:num_semana/:dia_semana",  (req, res) => {
+  const { num_semana, dia_semana } = req.params;
+  client.query(  `SELECT 
+  generate_series AS hora_inicio,
+  generate_series + INTERVAL '1 hour' AS hora_fin,
+  AVG(contador) AS historico,
+  CASE 
+    WHEN EXTRACT(HOUR FROM CURRENT_TIME) = EXTRACT(HOUR FROM generate_series) AND EXTRACT(MINUTE FROM CURRENT_TIME) >= EXTRACT(MINUTE FROM generate_series) THEN 
+      (SELECT COUNT(*) FROM RegistrosGimnasio rg WHERE rg.salida IS NULL) 
+    ELSE 
+      NULL 
+  END AS actual
+FROM 
+  generate_series(
+    (SELECT hora_inicio FROM Historial WHERE num_semana = $1 AND dia_semana = $2 ORDER BY hora_inicio LIMIT 1),
+    (SELECT hora_inicio FROM Historial WHERE num_semana = $1 AND dia_semana = $2 ORDER BY hora_inicio DESC LIMIT 1),
+    INTERVAL '1 hour'
+  ) AS generate_series
+LEFT JOIN Historial ON generate_series = Historial.hora_inicio AND Historial.num_semana = $1 AND Historial.dia_semana = $2
+GROUP BY 
+  hora_inicio
+ORDER BY 
+  hora_inicio;
+`,
+[num_semana, dia_semana], (error, results, fields) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "Error conexion base de datos",
+      });
+    }
+    return res.status(200).json(results.rows);
+  });
+});
+
 
 
 
