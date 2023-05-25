@@ -4,7 +4,7 @@ const client = require("../config/database");
 
 //GET all usuarios
 router.get("/", (req, res) => {
-  client.query(`SELECT * FROM Usuarios;`, (error, results, fields) => {
+  client.query(`SELECT u.matricula, u.nombre, tu.tipo FROM Usuarios u JOIN TipoUsuario tu ON u.tipo = tu.id;`, (error, results, fields) => {
     if (error) {
       console.log(error);
       return res.status(500).json({
@@ -19,7 +19,7 @@ router.get("/", (req, res) => {
 //GET usario by Matricula
 router.get("/:matricula", (req, res) => {
   const matricula= req.params.matricula;
-  client.query(`SELECT * FROM Usuarios WHERE matricula = $1;`,[matricula], (error, results, fields) => {
+  client.query(`SELECT u.matricula, u.nombre, tu.tipo FROM Usuarios u JOIN TipoUsuario tu ON u.tipo = tu.id WHERE matricula = $1;`,[matricula], (error, results, fields) => {
     if (error) {
       console.log(error);
       return res.status(500).json({
