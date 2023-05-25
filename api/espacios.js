@@ -54,6 +54,29 @@ router.get("/:id", (req, res) => {
   });
 });
 
+// GET espacios by deporte
+router.get("/deporte/:id", (req, res) => {
+  const id = req.params.id;
+  client.query(
+    `SELECT * FROM Espacios WHERE deporte = $1;`,
+    [id],
+    (error, results, fields) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({
+          message: "Error en la respuesta del servidor",
+        });
+      }
+      if (results.rows.length === 0) {
+        return res.status(404).json({
+          message: "No se encontraron espacios para el deporte especificado",
+        });
+      }
+      return res.status(200).json(results.rows);
+    }
+  );
+});
+
 // POST new espacio
 router.post("/", upload.single("imagen"), (req, res) => {
   const body = req.body;

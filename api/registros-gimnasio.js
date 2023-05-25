@@ -102,7 +102,13 @@ router.post("/", (req, res) => {
 router.post("/matricula", (req, res) => {
   const body = req.body;
   client.query(
-    `INSERT INTO RegistrosGimnasio (matricula, entrada, salida, fecha) VALUES ($1, CURRENT_TIME ::time, NULL, CURRENT_DATE) RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
+    `INSERT INTO RegistrosGimnasio (matricula, entrada, salida, fecha)
+     SELECT $1, CURRENT_TIME::time, NULL, CURRENT_DATE
+     WHERE NOT EXISTS (
+       SELECT 1 FROM RegistrosGimnasio
+       WHERE matricula = $1 AND salida IS NULL
+     )
+     RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
     [body.matricula],
     (error, results) => {
       if (error) {
@@ -111,6 +117,11 @@ router.post("/matricula", (req, res) => {
           message: "Error respuesta de servidor",
         });
       } else {
+        if (results.rowCount === 0) {
+          return res.status(409).json({
+            message: "Alumno ya registrado",
+          });
+        }
         return res.status(200).json(results.rows[0]);
       }
     }
