@@ -8,7 +8,7 @@ const fs = require("fs");
 
 // Set storage engine for multer
 const storage = multer.diskStorage({
-  destination: "./images",
+  destination: "./imagenes/mapas",
   filename: function (req, file, callback) {
     // Generate a unique filename
     const uniqueName = `${Date.now()}-${Math.round(
@@ -74,7 +74,7 @@ router.put("/", upload.single("imagen"), (req, res) => {
         const previousImagen = result.rows[0].imagen;
 
         // Delete the previous image file
-        const previousImagePath = path.join(__dirname, "../images", previousImagen);
+        const previousImagePath = path.join(__dirname, "../imagenes/mapas", previousImagen);
         fs.unlink(previousImagePath, (err) => {
           if (err) {
             console.error("Error deleting previous image:", err);
@@ -125,7 +125,7 @@ router.delete("/:id", (req, res) => {
       }
 
       // Delete the image file
-      const imagePath = path.join(__dirname, "../images", imagen);
+      const imagePath = path.join(__dirname, "../imagenes/mapas", imagen);
       fs.unlink(imagePath, (err) => {
         if (err) {
           console.error("Error deleting image:", err);

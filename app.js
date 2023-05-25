@@ -15,7 +15,7 @@ const mapaRouter = require("./api/mapa");
 // Middleware setup
 app.use(express.json());
 // Specify the directory where your static files are stored
-app.use(express.static("images"));
+app.use(express.static("imagenes"));
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
