@@ -93,7 +93,8 @@ router.get("/deporte=:deporte/fecha=:fecha", (req, res) => {
 router.post("/", (req, res) => {
   const body = req.body;
   client.query(
-    `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus) VALUES ($1, $2, $3, $4, $5) RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
+    `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus) VALUES ($1, $2, $3, $4, $5) 
+    RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
     [body.hora_seleccionada, body.matricula_alumno, body.fecha, body.espacio, body.estatus],
     (error, results) => {
       if (error) {
@@ -113,7 +114,8 @@ router.put("/", (req, res) => {
   const body = req.body;
   client.query(
     `UPDATE Reservaciones
-    SET hora_seleccionada = $1, matricula_alumno = $2, fecha = $3, espacio = $4, estatus = $5 WHERE id = $6 RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
+    SET hora_seleccionada = $1, matricula_alumno = $2, fecha = $3, espacio = $4, estatus = $5 WHERE id = $6 
+    RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
     [body.hora_seleccionada, body.matricula_alumno, body.fecha, body.espacio, body.estatus, body.id],
     (error, results) => {
       if (error) {
