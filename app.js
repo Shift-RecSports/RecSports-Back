@@ -11,8 +11,7 @@ const gimnasioRouter = require("./api/gimnasio");
 const usuariosRouter = require("./api/usuarios");
 const noticiasRouter = require("./api/noticias");
 const mapaRouter = require("./api/mapa");
-
-
+const encuestasRouter = require("./api/encuestas");
 
 // Middleware setup
 app.use(express.json());
@@ -35,6 +34,7 @@ app.use("/api/gimnasio", gimnasioRouter);
 app.use("/api/usuarios", usuariosRouter);
 app.use("/api/noticias", noticiasRouter);
 app.use("/api/mapa", mapaRouter);
+app.use("/api/encuestas", encuestasRouter);
 
 
 

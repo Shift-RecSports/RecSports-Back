@@ -38,9 +38,10 @@ router.get("/:id", (req, res) => {
 //POST new encuesta
 router.post("/", (req, res) => {
     const body = req.body;
+    console.log(body)
     client.query(
       `INSERT INTO encuestas (matricula, fecha, calificacion1, calificacion2, calificacion3, tema, comentario)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
     [body.matricula, body.fecha, body.calificacion1, body.calificacion2, body.calificacion3, body.tema, body.comentario],
       (error, results) => {
