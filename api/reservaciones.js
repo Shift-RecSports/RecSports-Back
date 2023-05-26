@@ -44,7 +44,7 @@ router.get("/:id", (req, res) => {
 // GET reservaciones by matricula
 router.get("/matricula/:matricula", (req, res) => {
   const matricula = req.params.matricula;
-  client.query(`SELECT r.*, e.zona, e.nombre as espacio_nombre, d.nombre as deporte_nombre, TO_CHAR(r.fecha, 'YYYY-MM-DD') AS fecha, e.imagen
+  client.query(`SELECT r.*, e.zona, e.nombre as espacio_nombre, d.nombre as deporte_nombre,d.materiales, TO_CHAR(r.fecha, 'YYYY-MM-DD') AS fecha, e.imagen
   FROM Reservaciones r
   JOIN Espacios e ON r.espacio = e.id
   JOIN Deportes d ON e.deporte = d.id
