@@ -65,15 +65,29 @@ router.get("/matricula/:matricula", (req, res) => {
 });
 
 
-// GET reservaciones by deporte
+// GET reservaciones by deporte by fecha
 router.get("/deporte=:deporte/fecha=:fecha", (req, res) => {
   const deporte = req.params.deporte;
   const fecha = req.params.fecha;
-  client.query(`SELECT Reservaciones.*, Espacios.zona, Espacios.nombre AS espacio_nombre, Deportes.nombre AS deporte_nombre, to_char(fecha, 'YYYY-MM-DD') AS fecha
-  FROM Reservaciones
-  JOIN Espacios ON Reservaciones.espacio = Espacios.id
-  JOIN Deportes ON Espacios.deporte = Deportes.id
-  WHERE Deportes.id = $1 AND Reservaciones.fecha = $2`, [deporte, fecha], (error, results) => {
+  client.query(`WITH RECURSIVE time_list AS (
+    SELECT '06:00:00'::TIME AS hora_inicio, '07:00:00'::TIME AS hora_fin
+    UNION ALL
+    SELECT hora_inicio + INTERVAL '1 hour', hora_fin + INTERVAL '1 hour'
+    FROM time_list
+    WHERE hora_inicio < '22:00:00'::TIME
+  )
+  
+  SELECT r.id, time_list.hora_inicio as hora_seleccionada, COALESCE(r.matricula_alumno, null) AS matricula_alumno, TO_CHAR(r.fecha, 'YYYY-MM-DD') AS fecha, r.espacio, COALESCE(r.estatus, 1) AS estatus
+  FROM time_list
+  LEFT JOIN (
+    SELECT hora_seleccionada, id, matricula_alumno, fecha, espacio, estatus
+    FROM Reservaciones
+    WHERE fecha = $2
+  ) AS r ON time_list.hora_inicio = r.hora_seleccionada
+  LEFT JOIN Espacios AS e ON r.espacio = e.id AND e.deporte = $1
+  ORDER BY time_list.hora_inicio;
+  
+`, [deporte,fecha], (error, results) => {
     if (error) {
       console.log(error);
       return res.status(500).json({
@@ -82,7 +96,7 @@ router.get("/deporte=:deporte/fecha=:fecha", (req, res) => {
     }
     if (results.rows.length === 0) {
       return res.status(404).json({
-        message: "Reservacion not found",
+        message: "Reservaciones no fueron encontradas",
       });
     }
     return res.status(200).json(results.rows);
