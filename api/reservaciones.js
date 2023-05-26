@@ -69,23 +69,8 @@ router.get("/matricula/:matricula", (req, res) => {
 router.get("/deporte=:deporte/fecha=:fecha", (req, res) => {
   const deporte = req.params.deporte;
   const fecha = req.params.fecha;
-  client.query(`WITH RECURSIVE time_list AS (
-    SELECT '06:00:00'::TIME AS hora_inicio, '07:00:00'::TIME AS hora_fin
-    UNION ALL
-    SELECT hora_inicio + INTERVAL '1 hour', hora_fin + INTERVAL '1 hour'
-    FROM time_list
-    WHERE hora_inicio < '22:00:00'::TIME
-  )
+  client.query(`
   
-  SELECT r.id, time_list.hora_inicio as hora_seleccionada, COALESCE(r.matricula_alumno, null) AS matricula_alumno, TO_CHAR(r.fecha, 'YYYY-MM-DD') AS fecha, r.espacio, COALESCE(r.estatus, 1) AS estatus
-  FROM time_list
-  LEFT JOIN (
-    SELECT hora_seleccionada, id, matricula_alumno, fecha, espacio, estatus
-    FROM Reservaciones
-    WHERE fecha = $2
-  ) AS r ON time_list.hora_inicio = r.hora_seleccionada
-  LEFT JOIN Espacios AS e ON r.espacio = e.id AND e.deporte = $1
-  ORDER BY time_list.hora_inicio;
   
 `, [deporte,fecha], (error, results) => {
     if (error) {
