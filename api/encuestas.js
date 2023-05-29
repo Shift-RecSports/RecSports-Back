@@ -16,6 +16,24 @@ router.get("/", (req, res) => {
     });
   });
 
+  //GET average of all encuestas
+router.get("/promedios", (req, res) => {
+  client.query(`SELECT
+  ROUND(AVG(calificacion1)::numeric, 1) AS promedio1,
+  ROUND(AVG(calificacion2)::numeric, 1) AS promedio2,
+  ROUND(AVG(calificacion3)::numeric, 1) AS promedio3
+FROM Encuestas;`, (error, results, fields) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "Error respuesta de servidor",
+      });
+    }
+  
+    return res.json(results.rows[0]);
+  });
+});
+
 //GET encuestas by Id
 router.get("/:id", (req, res) => {
     const id = req.params.id;
