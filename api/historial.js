@@ -93,33 +93,40 @@ router.delete("/:id", (req, res) => {
 router.get("/concurrencias-aforo-gimnasio/:num_semana/:dia_semana",  (req, res) => {
   const { num_semana, dia_semana } = req.params;
   client.query(  `
-  WITH reservation_times AS (
-    SELECT generate_series(
-             '2023-05-30 07:00:00'::timestamp,
-             '2023-05-30 10:00:00'::timestamp,
-             '1 hour'::interval
-           ) AS reservation_time
-  )
-  SELECT reservation_times.reservation_time
-  FROM reservation_times
-  LEFT JOIN Reservaciones ON (
-    Reservaciones.fecha = '2023-05-29'::date
-    AND Reservaciones.hora_seleccionada = reservation_times.reservation_time::time
-    AND Reservaciones.espacio = 'f8e443ec-5d1f-48dd-9916-d7f7eafc88fd'
-  )
-  WHERE Reservaciones.id IS NULL;
-  
-
+  WITH RECURSIVE time_list AS (
+    SELECT '06:00:00'::TIME AS hora_inicio, '07:00:00'::TIME AS hora_fin
+    UNION ALL
+    SELECT hora_inicio + INTERVAL '1 hour', hora_fin + INTERVAL '1 hour'
+    FROM time_list
+    WHERE hora_inicio < '22:00:00'::TIME
+)
+SELECT 
+    time_list.hora_inicio,
+    time_list.hora_fin,
+    ROUND(COALESCE(AVG(historial.contador), 0)) AS historico,
+    CASE 
+        WHEN EXTRACT(HOUR FROM CURRENT_TIMESTAMP) = EXTRACT(HOUR FROM time_list.hora_inicio) 
+            AND EXTRACT(MINUTE FROM CURRENT_TIMESTAMP) = EXTRACT(MINUTE FROM time_list.hora_inicio) 
+            THEN (SELECT COUNT(*) FROM RegistrosGimnasio WHERE salida IS NULL) 
+        ELSE NULL 
+    END AS actual
+FROM time_list
+LEFT JOIN Historial historial 
+    ON time_list.hora_inicio = historial.hora_inicio
+    AND num_semana = $1
+    AND dia_semana = $2
+GROUP BY time_list.hora_inicio, time_list.hora_fin
+ORDER BY time_list.hora_inicio ASC;
 `,
 [num_semana, dia_semana], (error, results, fields) => {
-    if (error) {
-      console.log(error);
-      return res.status(500).json({
-        message: "Error conexion base de datos",
-      });
-    }
-    return res.status(200).json(results.rows);
-  });
+   if (error) {
+     console.log(error);
+     return res.status(500).json({
+       message: "Error conexion base de datos",
+     });
+   }
+   return res.status(200).json(results.rows);
+ });
 });
 
 
