@@ -44,11 +44,12 @@ router.get("/:id", (req, res) => {
 // GET reservaciones by matricula
 router.get("/matricula/:matricula", (req, res) => {
   const matricula = req.params.matricula;
-  client.query(`SELECT r.*, e.zona, e.nombre as espacio_nombre, d.nombre as deporte_nombre, TO_CHAR(r.fecha, 'YYYY-MM-DD') AS fecha
+  client.query(`SELECT r.*, e.zona, e.nombre as espacio_nombre, d.nombre as deporte_nombre,d.materiales, TO_CHAR(r.fecha, 'YYYY-MM-DD') AS fecha, e.imagen
   FROM Reservaciones r
   JOIN Espacios e ON r.espacio = e.id
   JOIN Deportes d ON e.deporte = d.id
-  WHERE r.matricula_alumno = $1;`, [matricula], (error, results) => {
+  WHERE r.matricula_alumno = $1
+  ORDER BY r.fecha, r.hora_seleccionada;`, [matricula], (error, results) => {
     if (error) {
       console.log(error);
       return res.status(500).json({
@@ -93,9 +94,8 @@ router.get("/deporte=:deporte/fecha=:fecha", (req, res) => {
 router.post("/", (req, res) => {
   const body = req.body;
   client.query(
-    `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus) VALUES ($1, $2, $3, $4, $5) 
+    `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus) VALUES ($1, $2, $3, $4, $5) RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha 
     RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
-    [body.hora_seleccionada, body.matricula_alumno, body.fecha, body.espacio, body.estatus],
     (error, results) => {
       if (error) {
         console.log(error);
