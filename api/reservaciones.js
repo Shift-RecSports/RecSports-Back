@@ -122,8 +122,8 @@ ORDER BY espacio_list.id, time_list.hora_inicio ASC;
 router.post("/", (req, res) => {
   const body = req.body;
   client.query(
-    `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus) VALUES ($1, $2, $3, $4, $5) RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha 
-    RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
+    `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus) VALUES ($1, $2, $3, $4, $5) RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
+    [body.hora_seleccionada, body.matricula_alumno, body.fecha, body.espacio, 2],
     (error, results) => {
       if (error) {
         console.log(error);
