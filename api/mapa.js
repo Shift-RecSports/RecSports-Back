@@ -21,16 +21,16 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
-// GET all mapas
+// GET  mapa
 router.get("/", (req, res) => {
-  client.query(`SELECT * FROM Mapa`, (error, results) => {
+  client.query(`SELECT * FROM Mapa LIMIT 1`, (error, results) => {
     if (error) {
       console.log(error);
       return res.status(500).json({
         message: "Server error",
       });
     }
-    return res.status(200).json(results.rows);
+    return res.status(200).json(results.rows[0]);
   });
 });
 
