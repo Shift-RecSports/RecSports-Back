@@ -66,13 +66,12 @@ router.put("/", upload.single("imagen"), (req, res) => {
     client.query(
       `SELECT imagen FROM Mapa WHERE id = $1`,
       [id],
-      (err, result) => {
+      (err, results) => {
         if (err) {
           console.error("Mapa not found:", err);
           return res.status(500).json({ error: "Mapa not found" });
         }
-        const previousImagen = result.rows[0].imagen;
-
+        const previousImagen = results.rows[0].imagen;
         // Delete the previous image file
         const previousImagePath = path.join(__dirname, "../imagenes/mapas", previousImagen);
         fs.unlink(previousImagePath, (err) => {

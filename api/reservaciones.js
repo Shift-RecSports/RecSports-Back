@@ -90,8 +90,7 @@ SELECT
     espacio_list.id AS espacio,
     COALESCE(reservaciones.estatus, 1) AS estatus,
     COALESCE(espacio_list.zona, espacios.zona) AS zona,
-    COALESCE(espacio_list.nombre,  espacios.nombre) AS espacio_nombre,
-    COALESCE(deportes.nombre,'') AS deporte_nombre
+    COALESCE(espacio_list.nombre,  espacios.nombre) AS espacio_nombre
 FROM time_list
 CROSS JOIN espacio_list
 LEFT JOIN Reservaciones reservaciones ON time_list.hora_inicio = reservaciones.hora_seleccionada
@@ -177,22 +176,3 @@ module.exports = router;
 
 
 
-// WITH RECURSIVE time_list AS (
-//   SELECT '07:00:00'::TIME AS hora_inicio, '08:00:00'::TIME AS hora_fin
-//   UNION ALL
-//   SELECT hora_inicio + INTERVAL '1 hour', hora_fin + INTERVAL '1 hour'
-//   FROM time_list
-//   WHERE hora_inicio < '10:00:00'::TIME
-// )
-// SELECT
-//   time_list.hora_inicio,
-//   time_list.hora_fin,
-//   reservaciones.id,
-//   reservaciones.matricula_alumno,
-//   reservaciones.fecha,
-//   reservaciones.espacio
-// FROM time_list
-// LEFT JOIN Reservaciones reservaciones ON time_list.hora_inicio = reservaciones.hora_seleccionada
-//   AND reservaciones.fecha = CURRENT_DATE
-//   AND reservaciones.espacio ='0d94e719-09b9-4995-a21c-a2fb84f09cdc'
-// ORDER BY time_list.hora_inicio ASC;
