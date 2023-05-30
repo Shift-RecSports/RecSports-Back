@@ -65,8 +65,9 @@ router.get("/fecha=:fecha/offset=:offset", (req, res) => {
 //GET aforo actual gimnasio
 router.get("/aforo/actual", (req, res) => {
   client.query(
-    `
-    SELECT COUNT(*) as actual,(SELECT aforo FROM Gimnasio WHERE dia_semana = EXTRACT(DOW FROM CURRENT_DATE)::INTEGER LIMIT 1) as aforo FROM RegistrosGimnasio rg WHERE rg.salida IS NULL;`,
+    `SELECT COUNT(*) AS actual, COALESCE((SELECT aforo FROM Gimnasio WHERE dia_semana = EXTRACT(DOW FROM CURRENT_DATE)::INTEGER LIMIT 1), 0) AS aforo
+FROM RegistrosGimnasio rg
+WHERE rg.salida IS NULL;`,
     (error, results, fields) => {
       if (error) {
         console.log(error);
