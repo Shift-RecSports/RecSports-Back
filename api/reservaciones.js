@@ -76,7 +76,7 @@ router.get("/deporte=:deporte/fecha=:fecha", (req, res) => {
     UNION ALL
     SELECT hora_inicio + INTERVAL '1 hour', hora_fin + INTERVAL '1 hour'
     FROM time_list
-    WHERE hora_inicio < '22:00:00'::TIME
+    WHERE hora_inicio < '21:00:00'::TIME
 ), espacio_list AS (
     SELECT id,zona,nombre
     FROM Espacios
