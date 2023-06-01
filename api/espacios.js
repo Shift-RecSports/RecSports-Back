@@ -119,8 +119,8 @@ router.put("/", upload.single("imagen"), (req, res) => {
         const previousImagePath = path.join(__dirname, "../imagenes/espacios", previousImagen);
         fs.unlink(previousImagePath, (err) => {
           if (err) {
-            console.error("Error deleting previous imagen:", err);
-            return res.status(500).json({ error: "Failed to delete previous image from Espacio" });
+            console.error("Failed to delete previous image from Espacio");
+          
           }
         });
       }

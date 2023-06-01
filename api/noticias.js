@@ -147,8 +147,7 @@ router.delete("/:id", (req, res) => {
       const imagePath = path.join(__dirname, "../imagenes/noticias", imagen);
       fs.unlink(imagePath, (err) => {
         if (err) {
-          console.error("Error deleting image:", err);
-          return res.status(500).json({ error: "Failed to delete image" });
+          console.error("Failed to delete previous image from Noticia");
         }
 
         return res.status(200).json({ message: "Noticia and associated image deleted successfully" });

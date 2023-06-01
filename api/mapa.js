@@ -76,8 +76,7 @@ router.put("/", upload.single("imagen"), (req, res) => {
         const previousImagePath = path.join(__dirname, "../imagenes/mapas", previousImagen);
         fs.unlink(previousImagePath, (err) => {
           if (err) {
-            console.error("Error deleting previous image:", err);
-            return res.status(500).json({ error: "Failed to delete previous image from Mapa" });
+            console.error("Failed to delete previous image from Mapa");
           }
         });
       }

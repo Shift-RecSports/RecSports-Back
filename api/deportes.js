@@ -98,7 +98,7 @@ router.put("/", upload.single("imagen"), (req, res) => {
         const previousImagePath = path.join(__dirname, "../imagenes/deportes", previousImagen);
         fs.unlink(previousImagePath, (err) => {
           if (err) {
-            console.error("Error deleting previous imagen:", err);
+            console.error("Failed to delete previous image from Deporte");
           }
         });
       }
