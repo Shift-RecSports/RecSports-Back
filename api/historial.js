@@ -94,21 +94,20 @@ router.get("/concurrencias-aforo-gimnasio/:num_semana/:dia_semana",  (req, res) 
   const { num_semana, dia_semana } = req.params;
   client.query(  `
   WITH RECURSIVE time_list AS (
-    SELECT '06:00:00'::TIME AS hora_inicio, '07:00:00'::TIME AS hora_fin
+    SELECT '06:00'::TIME AS hora_inicio, '07:00'::TIME AS hora_fin
     UNION ALL
     SELECT hora_inicio + INTERVAL '1 hour', hora_fin + INTERVAL '1 hour'
     FROM time_list
-    WHERE hora_inicio < '22:00:00'::TIME
+    WHERE hora_inicio < '22:00'::TIME
 )
 SELECT 
     time_list.hora_inicio,
     time_list.hora_fin,
     ROUND(COALESCE(AVG(historial.contador), 0)) AS historico,
     CASE 
-        WHEN EXTRACT(HOUR FROM CURRENT_TIMESTAMP) = EXTRACT(HOUR FROM time_list.hora_inicio) 
-            AND EXTRACT(MINUTE FROM CURRENT_TIMESTAMP) = EXTRACT(MINUTE FROM time_list.hora_inicio) 
+        WHEN (EXTRACT(HOUR FROM CURRENT_TIMESTAMP AT TIME ZONE 'America/Monterrey') || ':00')::TIME = time_list.hora_inicio
             THEN (SELECT COUNT(*) FROM RegistrosGimnasio WHERE salida IS NULL) 
-        ELSE NULL 
+        ELSE 0
     END AS actual
 FROM time_list
 LEFT JOIN Historial historial 
@@ -117,6 +116,7 @@ LEFT JOIN Historial historial
     AND dia_semana = $2
 GROUP BY time_list.hora_inicio, time_list.hora_fin
 ORDER BY time_list.hora_inicio ASC;
+
 `,
 [num_semana, dia_semana], (error, results, fields) => {
    if (error) {
