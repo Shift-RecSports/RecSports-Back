@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const client = require("../config/database");
+const multer = require("multer");
+const upload = multer();
+
 
 //GET all usuarios
 router.get("/", (req, res) => {
@@ -36,7 +39,7 @@ router.get("/:matricula", (req, res) => {
 });
 
 //POST usario Login
-router.post("/login", (req, res) => {
+router.post("/login",upload.single(), (req, res) => {
   const body = req.body;
   client.query(`SELECT u.matricula, u.nombre, tu.tipo
   FROM Usuarios u
@@ -60,7 +63,7 @@ router.post("/login", (req, res) => {
 });
 
 //POST new usuario
-router.post("/", (req, res) => {
+router.post("/",upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `INSERT INTO Usuarios (matricula, nombre, tipo)

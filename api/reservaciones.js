@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const client = require("../config/database");
+const multer = require("multer");
+const upload = multer();
+
 
 // GET all reservaciones
 router.get("/", (req, res) => {
@@ -118,7 +121,7 @@ ORDER BY espacio_list.id, time_list.hora_inicio ASC;
 
 
 // POST new reservacion
-router.post("/", (req, res) => {
+router.post("/",upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus) VALUES ($1, $2, $3, $4, $5) RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
@@ -137,7 +140,7 @@ router.post("/", (req, res) => {
 });
 
 // UPDATE reservacion
-router.put("/", (req, res) => {
+router.put("/",upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `UPDATE Reservaciones

@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const client = require("../config/database");
+const multer = require("multer");
+const upload = multer();
+
 
 //GET all gimnasio
 router.get("/", (req, res) => {
@@ -37,7 +40,7 @@ router.get("/:id", (req, res) => {
 });
 
 //POST new gimnasio
-router.post("/", (req, res) => {
+router.post("/",upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `INSERT INTO Gimnasio (dia_semana, hora_inicio, hora_fin, aforo)
@@ -57,7 +60,7 @@ router.post("/", (req, res) => {
 });
 
 // UPDATE gimnasio
-router.put("/:id", (req, res) => {
+router.put("/:id",upload.single(), (req, res) => {
   const id = req.params.id;
   const body = req.body;
   client.query(

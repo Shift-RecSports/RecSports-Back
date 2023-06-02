@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const client = require("../config/database");
+const multer = require("multer");
+const upload = multer();
+
 
 //GET all registrosgimnasio
 router.get("/", (req, res) => {
@@ -81,7 +84,7 @@ WHERE rg.salida IS NULL;`,
 });
 
 //POST new registro gimnasio
-router.post("/", (req, res) => {
+router.post("/",upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `INSERT INTO RegistrosGimnasio (matricula, entrada, salida, fecha) VALUES ($1, $2, $3, $4) RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
@@ -100,7 +103,7 @@ router.post("/", (req, res) => {
 });
 
 //POST new registro gimnasio with only Matricula
-router.post("/matricula", (req, res) => {
+router.post("/matricula",upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `INSERT INTO RegistrosGimnasio (matricula, entrada, salida, fecha)
@@ -130,7 +133,7 @@ router.post("/matricula", (req, res) => {
 });
 
 //UPDATE registro gimnasio
-router.put("/", (req, res) => {
+router.put("/",upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `UPDATE RegistrosGimnasio
@@ -150,7 +153,7 @@ router.put("/", (req, res) => {
 });
 
 //UPDATE registro gimnasio with only Matricula
-router.put("/matricula", (req, res) => {
+router.put("/matricula",upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `UPDATE RegistrosGimnasio

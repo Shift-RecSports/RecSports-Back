@@ -1,7 +1,7 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 require("dotenv").config();
 const app = express();
+const bodyParser = require("body-parser");
 const deportesRouter = require("./api/deportes");
 const espaciosRouter = require("./api/espacios");
 const historialRouter = require("./api/historial");
@@ -12,6 +12,7 @@ const usuariosRouter = require("./api/usuarios");
 const noticiasRouter = require("./api/noticias");
 const mapaRouter = require("./api/mapa");
 const encuestasRouter = require("./api/encuestas");
+
 
 // Middleware setup
 app.use(express.json());

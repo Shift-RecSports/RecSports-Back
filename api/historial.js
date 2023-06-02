@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const client = require("../config/database");
+const multer = require("multer");
+const upload = multer();
+
 
 //GET all historial
 router.get("/", (req, res) => {
@@ -36,7 +39,7 @@ router.get("/:id", (req, res) => {
 });
 
 //POST new historial
-router.post("/", (req, res) => {
+router.post("/",upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `INSERT INTO Historial (num_semana, fecha, hora_inicio, contador, dia_semana)
@@ -56,7 +59,7 @@ VALUES ($1, $2, $3, $4, $5) RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`
 });
 
 //UPDATE historial
-router.put("/", (req, res) => {
+router.put("/",upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `UPDATE Historial SET num_semana = $1, fecha = TO_DATE($2, 'YYYY-MM-DD'), hora_inicio = $3, contador = $4, dia_semana = $5 WHERE id = $6 RETURNING *;`,
