@@ -57,15 +57,13 @@ router.post("/", upload.single("imagen"), (req, res) => {
 
 // UPDATE mapa
 router.put("/", upload.single("imagen"), (req, res) => {
-  const id = req.body.id;
-  const imagen = req.file ? req.file.filename : req.body.imagen;
+  let imagen = req.file ? req.file.filename : req.body.imagen;
 
   // Check if the received imagen parameter is a file
   if (req.file) {
     // Delete the previous image file of the specific mapa
     client.query(
-      `SELECT imagen FROM Mapa WHERE id = $1`,
-      [id],
+      `SELECT imagen FROM Mapa WHERE id = 1`,
       (err, results) => {
         if (err) {
           console.error("Mapa not found:", err);
@@ -76,7 +74,7 @@ router.put("/", upload.single("imagen"), (req, res) => {
         const previousImagePath = path.join(__dirname, "../imagenes/mapas", previousImagen);
         fs.unlink(previousImagePath, (err) => {
           if (err) {
-            console.error("Failed to delete previous image from Mapa");
+            console.error("Error deleting previous image:", err);
           }
         });
       }
@@ -85,14 +83,16 @@ router.put("/", upload.single("imagen"), (req, res) => {
 
   // Update the mapa with the new image filename or with the same imagen string
   client.query(
-    `UPDATE Mapa SET imagen = $1 WHERE id = $2 RETURNING *;`,
-    [imagen, id],
+    `UPDATE Mapa SET imagen = $1 WHERE id = 1 RETURNING *;`,
+    [imagen],
     (err, result) => {
       if (err) {
         console.error("Error updating mapa:", err);
         return res.status(500).json({ error: "Failed to update mapa" });
       }
-      return res.status(200).json(result.rows[0]);
+      else{
+        return res.status(200).json(result.rows[0]);
+      }
     }
   );
 });
