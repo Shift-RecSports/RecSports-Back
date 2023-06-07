@@ -74,7 +74,7 @@ router.get("/deporte=:deporte/fecha=:fecha", (req, res) => {
   const deporte = req.params.deporte;
   const fecha = req.params.fecha;
   client.query(`
- WITH RECURSIVE time_list AS (
+  WITH RECURSIVE time_list AS (
     SELECT '06:00:00'::TIME AS hora_inicio, '07:00:00'::TIME AS hora_fin
     UNION ALL
     SELECT hora_inicio + INTERVAL '1 hour', hora_fin + INTERVAL '1 hour'
@@ -91,7 +91,11 @@ SELECT
     reservaciones.matricula_alumno,
     COALESCE(TO_CHAR(reservaciones.fecha, 'YYYY-MM-DD'), $2::TEXT) AS fecha,
     espacio_list.id AS espacio,
-    COALESCE(reservaciones.estatus, 1) AS estatus,
+    CASE 
+        WHEN (time_list.hora_inicio <= (EXTRACT(HOUR FROM CURRENT_TIMESTAMP AT TIME ZONE 'America/Monterrey') || ':00')::TIME AND $2 = (CURRENT_DATE AT TIME ZONE 'America/Monterrey'))
+            THEN 3 
+        ELSE COALESCE(reservaciones.estatus, 1)
+    END AS estatus,
     COALESCE(espacio_list.zona, espacios.zona) AS zona,
     COALESCE(espacio_list.nombre,  espacios.nombre) AS espacio_nombre
 FROM time_list
@@ -179,3 +183,35 @@ module.exports = router;
 
 
 
+
+
+// GET reservaciones by deporte by fecha ANTES DE CAMBIOS DE ESTATUS 3 Expirado por fecha y hora
+
+// WITH RECURSIVE time_list AS (
+//   SELECT '06:00:00'::TIME AS hora_inicio, '07:00:00'::TIME AS hora_fin
+//   UNION ALL
+//   SELECT hora_inicio + INTERVAL '1 hour', hora_fin + INTERVAL '1 hour'
+//   FROM time_list
+//   WHERE hora_inicio < '21:00:00'::TIME
+// ), espacio_list AS (
+//   SELECT id,zona,nombre
+//   FROM Espacios
+//   WHERE deporte = $1
+// )
+// SELECT
+//   reservaciones.id,
+//   time_list.hora_inicio AS hora_seleccionada,
+//   reservaciones.matricula_alumno,
+//   COALESCE(TO_CHAR(reservaciones.fecha, 'YYYY-MM-DD'), $2::TEXT) AS fecha,
+//   espacio_list.id AS espacio,
+//   COALESCE(reservaciones.estatus, 1) AS estatus,
+//   COALESCE(espacio_list.zona, espacios.zona) AS zona,
+//   COALESCE(espacio_list.nombre,  espacios.nombre) AS espacio_nombre
+// FROM time_list
+// CROSS JOIN espacio_list
+// LEFT JOIN Reservaciones reservaciones ON time_list.hora_inicio = reservaciones.hora_seleccionada
+//   AND (reservaciones.fecha = $2 OR reservaciones.fecha IS NULL)
+//   AND reservaciones.espacio = espacio_list.id
+// LEFT JOIN Espacios espacios ON reservaciones.espacio = espacios.id
+// LEFT JOIN Deportes deportes ON espacios.deporte = deportes.id
+// ORDER BY espacio_list.id, time_list.hora_inicio ASC;
