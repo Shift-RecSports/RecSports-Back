@@ -35,6 +35,20 @@ router.get("/", (req, res) => {
   });
 });
 
+//GET fav # deportes
+router.get("/favoritos/:number", (req, res) => {
+  const number = req.params.number;
+  client.query(`SELECT * FROM DEPORTES LIMIT $1`,[number], (error, results, fields) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "Error respuesta de servidor",
+      });
+    }
+    return res.json(results.rows);
+  });
+});
+
 //GET deporte by Id
 router.get("/:id", (req, res) => {
   const id = req.params.id;
