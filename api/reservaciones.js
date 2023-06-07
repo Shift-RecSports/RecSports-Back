@@ -109,7 +109,7 @@ WHERE time_list.hora_inicio >= espacio_list.horario::TIME
                 AND time_list.hora_inicio < espacio_list.horario::TIME + INTERVAL '1 hour'
 ORDER BY espacio_list.id, time_list.hora_inicio ASC;
   
-`, [deporte,fecha], (error, results) => {
+`, [deporte, fecha], (error, results) => {
     if (error) {
       console.log(error);
       return res.status(500).json({
@@ -129,15 +129,11 @@ ORDER BY espacio_list.id, time_list.hora_inicio ASC;
 // POST new reservation
 router.post("/", upload.single(), (req, res) => {
   const body = req.body;
-// Check if there is an existing reservation for the same matricula, date, and deporte
+  
+  // Check if the user is an Alumno with tipo usuario id 3
   client.query(
-    `SELECT COUNT(*) AS count
-    FROM Reservaciones r
-    INNER JOIN Espacios e ON r.espacio = e.id
-    WHERE r.matricula_alumno = $1
-    AND r.fecha = $2::DATE
-    AND e.deporte = (SELECT deporte FROM Espacios WHERE id = $3)`,
-    [body.matricula_alumno, body.fecha, body.espacio],
+    `SELECT tipo FROM Usuarios WHERE matricula = $1`,
+    [body.matricula_alumno],
     (error, results) => {
       if (error) {
         console.log(error);
@@ -146,28 +142,41 @@ router.post("/", upload.single(), (req, res) => {
         });
       }
       
-      const count = parseInt(results.rows[0].count);
+      const tipoUsuario = results.rows[0].tipo;
       
-      if (count > 0) {
-        // There is an existing reservation for the same matricula, date, and deporte
-        return res.status(400).json({
-          message: "Solo disponible una reserva para este deporte en esta fecha.",
-        });
+      if (tipoUsuario !== 3) {
+        // User is not an Alumno with tipo usuario id 3
+        // Proceed with creating a new reservation without checking for existing reservations
+        createReservation(body, res);
       } else {
-        // No existing reservation found, proceed with creating a new reservation
+        // User is an Alumno with tipo usuario id 3
+        // Check if there is an existing reservation for the same matricula, date, and deporte
         client.query(
-          `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus)
-          VALUES ($1, $2, $3, $4, $5)
-          RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
-          [body.hora_seleccionada, body.matricula_alumno, body.fecha, body.espacio, 2],
+          `SELECT COUNT(*) AS count
+          FROM Reservaciones r
+          INNER JOIN Espacios e ON r.espacio = e.id
+          WHERE r.matricula_alumno = $1
+          AND r.fecha = $2::DATE
+          AND e.deporte = (SELECT deporte FROM Espacios WHERE id = $3)`,
+          [body.matricula_alumno, body.fecha, body.espacio],
           (error, results) => {
             if (error) {
               console.log(error);
               return res.status(500).json({
                 message: "Error en respuesta de servidor",
               });
+            }
+
+            const count = parseInt(results.rows[0].count);
+
+            if (count > 0) {
+              // There is an existing reservation for the same matricula, date, and deporte
+              return res.status(400).json({
+                message: "Solo disponible una reserva para este deporte en esta fecha.",
+              });
             } else {
-              return res.status(200).json(results.rows[0]);
+              // No existing reservation found, proceed with creating a new reservation
+              createReservation(body, res);
             }
           }
         );
@@ -176,11 +185,32 @@ router.post("/", upload.single(), (req, res) => {
   );
 });
 
+// Function to create a new reservation
+function createReservation(body, res) {
+  client.query(
+    `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
+    [body.hora_seleccionada, body.matricula_alumno, body.fecha, body.espacio, 2],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({
+          message: "Error en respuesta de servidor",
+        });
+      } else {
+        return res.status(200).json(results.rows[0]);
+      }
+    }
+  );
+}
+
+
 
 
 
 // UPDATE reservacion
-router.put("/",upload.single(), (req, res) => {
+router.put("/", upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `UPDATE Reservaciones
