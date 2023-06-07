@@ -14,7 +14,7 @@ router.get("/", (req, res) => {
     if (error) {
       console.log(error);
       return res.status(500).json({
-        message: "Error responding from the server",
+        message: "Error en respuesta de servidor",
       });
     }
     return res.json(results.rows);
@@ -32,7 +32,7 @@ router.get("/:id", (req, res) => {
     if (error) {
       console.log(error);
       return res.status(500).json({
-        message: "Error responding from the server",
+        message: "Error en respuesta de servidor",
       });
     }
     if (results.rows.length === 0) {
@@ -56,7 +56,7 @@ router.get("/matricula/:matricula", (req, res) => {
     if (error) {
       console.log(error);
       return res.status(500).json({
-        message: "Error responding from the server",
+        message: "Error en respuesta de servidor",
       });
     }
     if (results.rows.length === 0) {
@@ -113,7 +113,7 @@ ORDER BY espacio_list.id, time_list.hora_inicio ASC;
     if (error) {
       console.log(error);
       return res.status(500).json({
-        message: "Error responding from the server",
+        message: "Error en respuesta de servidor",
       });
     }
     if (results.rows.length === 0) {
@@ -126,24 +126,58 @@ ORDER BY espacio_list.id, time_list.hora_inicio ASC;
 });
 
 
-// POST new reservacion
-router.post("/",upload.single(), (req, res) => {
+// POST new reservation
+router.post("/", upload.single(), (req, res) => {
   const body = req.body;
+// Check if there is an existing reservation for the same matricula, date, and deporte
   client.query(
-    `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus) VALUES ($1, $2, $3, $4, $5) RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
-    [body.hora_seleccionada, body.matricula_alumno, body.fecha, body.espacio, 2],
+    `SELECT COUNT(*) AS count
+    FROM Reservaciones r
+    INNER JOIN Espacios e ON r.espacio = e.id
+    WHERE r.matricula_alumno = $1
+    AND r.fecha = $2::DATE
+    AND e.deporte = (SELECT deporte FROM Espacios WHERE id = $3)`,
+    [body.matricula_alumno, body.fecha, body.espacio],
     (error, results) => {
       if (error) {
         console.log(error);
         return res.status(500).json({
-          message: "Error responding from the server",
+          message: "Error en respuesta de servidor",
+        });
+      }
+      
+      const count = parseInt(results.rows[0].count);
+      
+      if (count > 0) {
+        // There is an existing reservation for the same matricula, date, and deporte
+        return res.status(400).json({
+          message: "Solo disponible una reserva para este deporte en esta fecha.",
         });
       } else {
-        return res.status(200).json(results.rows[0]);
+        // No existing reservation found, proceed with creating a new reservation
+        client.query(
+          `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus)
+          VALUES ($1, $2, $3, $4, $5)
+          RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
+          [body.hora_seleccionada, body.matricula_alumno, body.fecha, body.espacio, 2],
+          (error, results) => {
+            if (error) {
+              console.log(error);
+              return res.status(500).json({
+                message: "Error en respuesta de servidor",
+              });
+            } else {
+              return res.status(200).json(results.rows[0]);
+            }
+          }
+        );
       }
     }
   );
 });
+
+
+
 
 // UPDATE reservacion
 router.put("/",upload.single(), (req, res) => {
@@ -157,7 +191,7 @@ router.put("/",upload.single(), (req, res) => {
       if (error) {
         console.log(error);
         return res.status(500).json({
-          message: "Error responding from the server",
+          message: "Error en respuesta de servidor",
         });
       } else {
         return res.status(200).json(results.rows[0]);
@@ -173,7 +207,7 @@ router.delete("/:id", (req, res) => {
     if (error) {
       console.log(error);
       return res.status(500).json({
-        message: "Error responding from the server",
+        message: "Error en respuesta de servidor",
       });
     }
     return res.status(200).json({});

@@ -68,7 +68,7 @@ router.put("/",upload.single(), (req, res) => {
       if (error) {
         console.log(error);
         return res.status(500).json({
-          message: "Error responding from the server",
+          message: "Error en respuesta de servidor",
         });
       } else {
         return res.status(200).json(results.rows[0]);
