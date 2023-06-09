@@ -7,7 +7,10 @@ const upload = multer();
 //GET all registrosgimnasio
 router.get("/", (req, res) => {
   client.query(
-    `SELECT *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha FROM RegistrosGimnasio;`,
+    `SELECT rg.id,rg.matricula, u.nombre, rg.entrada, rg.salida, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha
+    FROM RegistrosGimnasio rg
+    LEFT JOIN Usuarios u ON rg.matricula = u.matricula
+    ;`,
     (error, results, fields) => {
       if (error) {
         console.log(error);
