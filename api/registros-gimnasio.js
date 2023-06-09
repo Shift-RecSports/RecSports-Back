@@ -80,7 +80,7 @@ router.get("/aforo/actual", (req, res) => {
   client.query(
     `SELECT COUNT(*) AS actual, COALESCE((SELECT aforo FROM Gimnasio WHERE dia_semana = EXTRACT(DOW FROM CURRENT_DATE)::INTEGER LIMIT 1), 0) AS aforo
 FROM RegistrosGimnasio rg
-WHERE rg.salida IS NULL;`,
+WHERE rg.salida IS NULL AND fecha = CURRENT_DATE;`,
     (error, results, fields) => {
       if (error) {
         console.log(error);
