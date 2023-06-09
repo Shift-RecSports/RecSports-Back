@@ -118,31 +118,46 @@ router.post("/", upload.single(), (req, res) => {
 //POST new registro gimnasio with only Matricula
 router.post("/matricula", upload.single(), (req, res) => {
   const body = req.body;
-  client.query(
-    `INSERT INTO RegistrosGimnasio (matricula, entrada, salida, fecha)
-     SELECT $1, CURRENT_TIME::time, NULL, CURRENT_DATE
-     WHERE NOT EXISTS (
-       SELECT 1 FROM RegistrosGimnasio
-       WHERE matricula = $1 AND salida IS NULL
-     )
-     RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
-    [body.matricula],
-    (error, results) => {
-      if (error) {
-        console.log(error);
-        return res.status(500).json({
-          message: "Error respuesta de servidor",
-        });
-      } else {
-        if (results.rowCount === 0) {
-          return res.status(409).json({
-            message: "Alumno ya registrado",
-          });
-        }
-        return res.status(200).json(results.rows[0]);
-      }
+
+  client.query(`SELECT u.matricula, u.nombre, tu.tipo FROM Usuarios u JOIN TipoUsuario tu ON u.tipo = tu.id WHERE matricula = $1;`,[body.matricula], (error, results, fields) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "Error respuesta de servidor",
+      });
     }
-  );
+    if (results.rows.length === 0) {
+      return res.status(404).json({
+        message: "Matricula no válida",
+      });
+    }
+    client.query(
+      `INSERT INTO RegistrosGimnasio (matricula, entrada, salida, fecha)
+       SELECT $1, CURRENT_TIME::time, NULL, CURRENT_DATE
+       WHERE NOT EXISTS (
+         SELECT 1 FROM RegistrosGimnasio
+         WHERE matricula = $1 AND salida IS NULL
+       )
+       RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
+      [body.matricula],
+      (error, results) => {
+        if (error) {
+          console.log(error);
+          return res.status(500).json({
+            message: "Error respuesta de servidor",
+          });
+        } else {
+          if (results.rowCount === 0) {
+            return res.status(409).json({
+              message: "Alumno ya registrado",
+            });
+          }
+          return res.status(200).json(results.rows[0]);
+        }
+      }
+    );
+  });
+  
 });
 
 //UPDATE registro gimnasio
@@ -182,7 +197,13 @@ router.put("/matricula", upload.single(), (req, res) => {
         return res.status(500).json({
           message: "Error respuesta de servidor",
         });
-      } else {
+      }
+      if (results.rows.length === 0) {
+        return res.status(404).json({
+          message: "Matricula no válida",
+        });
+      }
+       else {
         return res.status(200).json(results.rows[0]);
       }
     }
