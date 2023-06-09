@@ -4,51 +4,60 @@ const client = require("../config/database");
 const multer = require("multer");
 const upload = multer();
 
-
 //GET all registrosgimnasio
 router.get("/", (req, res) => {
-  client.query(`SELECT *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha FROM RegistrosGimnasio;`, (error, results, fields) => {
-    if (error) {
-      console.log(error);
-      return res.status(500).json({
-        message: "Error respuesta de servidor",
-      });
-    }
+  client.query(
+    `SELECT *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha FROM RegistrosGimnasio;`,
+    (error, results, fields) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({
+          message: "Error respuesta de servidor",
+        });
+      }
 
-    return res.json(results.rows);
-  });
+      return res.json(results.rows);
+    }
+  );
 });
 
 //GET registro gimnasio by Id
 router.get("/:id", (req, res) => {
   const id = req.params.id;
-  client.query(`SELECT *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha FROM RegistrosGimnasio WHERE id = $1;`, [id], (error, results, fields) => {
-    if (error) {
-      console.log(error);
-      return res.status(500).json({
-        message: "Error respuesta de servidor",
-      });
+  client.query(
+    `SELECT *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha FROM RegistrosGimnasio WHERE id = $1;`,
+    [id],
+    (error, results, fields) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({
+          message: "Error respuesta de servidor",
+        });
+      }
+      if (results.rows.length === 0) {
+        return res.status(404).json({
+          message: "Registro no encontrado",
+        });
+      }
+      return res.status(200).json(results.rows[0]);
     }
-    if (results.rows.length === 0) {
-      return res.status(404).json({
-        message: "Registro no encontrado",
-      });
-    }
-    return res.status(200).json(results.rows[0]);
-  });
+  );
 });
 
 //GET registro gimnasio by Fecha
 router.get("/fecha=:fecha/offset=:offset", (req, res) => {
   const fecha = req.params.fecha;
   const offset = req.params.offset;
-  client.query(`SELECT rg.id,rg.matricula, u.nombre, rg.entrada, rg.salida, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha
+  client.query(
+    `SELECT rg.id,rg.matricula, u.nombre, rg.entrada, rg.salida, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha
   FROM RegistrosGimnasio rg
   JOIN Usuarios u ON rg.matricula = u.matricula
   WHERE rg.fecha = $1
+  ORDER BY rg.entrada DESC
   OFFSET $2
   LIMIT 50;
-  `, [fecha, offset],
+  `,
+    [fecha, offset],
     (error, results, fields) => {
       if (error) {
         console.log(error);
@@ -62,7 +71,8 @@ router.get("/fecha=:fecha/offset=:offset", (req, res) => {
         });
       }
       return res.status(200).json(results.rows);
-    });
+    }
+  );
 });
 
 //GET aforo actual gimnasio
@@ -84,7 +94,7 @@ WHERE rg.salida IS NULL;`,
 });
 
 //POST new registro gimnasio
-router.post("/",upload.single(), (req, res) => {
+router.post("/", upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `INSERT INTO RegistrosGimnasio (matricula, entrada, salida, fecha) VALUES ($1, $2, $3, $4) RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
@@ -103,7 +113,7 @@ router.post("/",upload.single(), (req, res) => {
 });
 
 //POST new registro gimnasio with only Matricula
-router.post("/matricula",upload.single(), (req, res) => {
+router.post("/matricula", upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `INSERT INTO RegistrosGimnasio (matricula, entrada, salida, fecha)
@@ -133,7 +143,7 @@ router.post("/matricula",upload.single(), (req, res) => {
 });
 
 //UPDATE registro gimnasio
-router.put("/",upload.single(), (req, res) => {
+router.put("/", upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `UPDATE RegistrosGimnasio
@@ -153,7 +163,7 @@ router.put("/",upload.single(), (req, res) => {
 });
 
 //UPDATE registro gimnasio with only Matricula
-router.put("/matricula",upload.single(), (req, res) => {
+router.put("/matricula", upload.single(), (req, res) => {
   const body = req.body;
   client.query(
     `UPDATE RegistrosGimnasio
@@ -176,13 +186,13 @@ router.put("/matricula",upload.single(), (req, res) => {
   );
 });
 
-
-
 //DELETE registro gimnasio
 router.delete("/:id", (req, res) => {
   const id = req.params.id;
-  client.query(`DELETE FROM RegistrosGimnasio WHERE id = $1`,
-    [id], (error, results, fields) => {
+  client.query(
+    `DELETE FROM RegistrosGimnasio WHERE id = $1`,
+    [id],
+    (error, results, fields) => {
       if (error) {
         console.log(error);
         return res.status(500).json({
@@ -190,9 +200,8 @@ router.delete("/:id", (req, res) => {
         });
       }
       return res.status(200).json({});
-    });
+    }
+  );
 });
-
-
 
 module.exports = router;
