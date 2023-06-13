@@ -12,7 +12,7 @@ const usuariosRouter = require("./api/usuarios");
 const noticiasRouter = require("./api/noticias");
 const mapaRouter = require("./api/mapa");
 const encuestasRouter = require("./api/encuestas");
-const { runJobEveryMinute } = require("./api/scheduled_jobs");
+const { runJobEveryHour } = require("./api/scheduled_jobs");
 
 
 
@@ -42,7 +42,8 @@ app.use("/api/encuestas", encuestasRouter);
 
 
 // Run the job
-runJobEveryMinute();
+
+runJobEveryHour();
 
 app.listen(process.env.PORT, () => {
   console.log("Server is up and running on PORT:", process.env.PORT);
