@@ -158,6 +158,7 @@ router.post("/", upload.single(), (req, res) => {
           INNER JOIN Espacios e ON r.espacio = e.id
           WHERE r.matricula_alumno = $1
           AND r.fecha = $2::DATE
+          AND r.estatus <> 4 -- Exclude reservations with status 4
           AND e.deporte = (SELECT deporte FROM Espacios WHERE id = $3)`,
           [body.matricula_alumno, body.fecha, body.espacio],
           (error, results) => {
