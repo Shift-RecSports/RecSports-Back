@@ -81,6 +81,7 @@ function expirePassedReservations() {
   });
 };
 
+
 //Marca la salida de los usuarios del gimnasio después de 90 minutos de haber entrado y no registraron su salida.
 function setGym90Checkout() {
   client.query(`

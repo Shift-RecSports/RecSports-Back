@@ -69,7 +69,7 @@ router.get("/matricula/:matricula", (req, res) => {
 });
 
 
-// GET all reservaciones (taken, expired and free) of espacios by deporte by fecha considering available hours per espacio and current date and time to expire them 
+// GET todas las reservaciones (ocupadas, expiradas y disponibles) de los espacios por deporte y fecha, considerando las horas disponibles por espacio y la fecha y hora actual para marcarlas como expiradas.
 router.get("/deporte=:deporte/fecha=:fecha", (req, res) => {
   const deporte = req.params.deporte;
   const fecha = req.params.fecha;
@@ -103,6 +103,7 @@ CROSS JOIN espacio_list
 LEFT JOIN Reservaciones reservaciones ON time_list.hora_inicio = reservaciones.hora_seleccionada
     AND (reservaciones.fecha = $2 OR reservaciones.fecha IS NULL)
     AND reservaciones.espacio = espacio_list.id
+    AND reservaciones.estatus <> 4 -- Exclude reservations with status 4
 LEFT JOIN Espacios espacios ON reservaciones.espacio = espacios.id
 LEFT JOIN Deportes deportes ON espacios.deporte = deportes.id
 WHERE time_list.hora_inicio >= espacio_list.horario::TIME
@@ -147,7 +148,7 @@ router.post("/", upload.single(), (req, res) => {
       if (tipoUsuario !== 3) {
         // User is not an Alumno with tipo usuario id 3
         // Proceed with creating a new reservation without checking for existing reservations
-        createReservation(body, res);
+        createReservation(body, res, 2);
       } else {
         // User is an Alumno with tipo usuario id 3
         // Check if there is an existing reservation for the same matricula, date, and deporte
@@ -176,7 +177,7 @@ router.post("/", upload.single(), (req, res) => {
               });
             } else {
               // No existing reservation found, proceed with creating a new reservation
-              createReservation(body, res);
+              createReservation(body, res, 2);
             }
           }
         );
@@ -186,12 +187,12 @@ router.post("/", upload.single(), (req, res) => {
 });
 
 // Function to create a new reservation
-function createReservation(body, res) {
+function createReservation(body, res, estatus) {
   client.query(
     `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus)
     VALUES ($1, $2, $3, $4, $5)
     RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
-    [body.hora_seleccionada, body.matricula_alumno, body.fecha, body.espacio, 2],
+    [body.hora_seleccionada, body.matricula_alumno, body.fecha, body.espacio, estatus],
     (error, results) => {
       if (error) {
         console.log(error);
@@ -230,6 +231,7 @@ router.put("/", upload.single(), (req, res) => {
   );
 });
 
+
 // DELETE reservacion
 router.delete("/:id", (req, res) => {
   const id = req.params.id;
@@ -243,6 +245,29 @@ router.delete("/:id", (req, res) => {
     return res.status(200).json({});
   });
 });
+
+
+// CANCEL reservacion
+router.put("/cancel", upload.single(), (req, res) => {
+  const body = req.body;
+  client.query(
+    `UPDATE Reservaciones
+    SET estatus = 4 WHERE id = $1 
+    RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
+    [body.id],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({
+          message: "Error en respuesta de servidor",
+        });
+      } else {
+        return res.status(200).json(results.rows[0]);
+      }
+    }
+  );
+});
+
 
 module.exports = router;
 
