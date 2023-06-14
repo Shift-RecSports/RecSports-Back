@@ -249,13 +249,13 @@ router.delete("/:id", (req, res) => {
 
 
 // CANCEL reservacion
-router.put("/cancel", upload.single(), (req, res) => {
-  const body = req.body;
+router.put("/cancelar/:id", upload.single(), (req, res) => {
+  const id = req.params.id;
   client.query(
     `UPDATE Reservaciones
     SET estatus = 4 WHERE id = $1 
     RETURNING *, TO_CHAR(fecha, 'YYYY-MM-DD') AS fecha;`,
-    [body.id],
+    [id],
     (error, results) => {
       if (error) {
         console.log(error);
