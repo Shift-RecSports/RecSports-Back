@@ -93,6 +93,8 @@ router.delete("/:id", (req, res) => {
   });
 });
 
+
+// Obtener información histórica y actual sobre las concurrencias y el aforo de un gimnasio en diferentes horas del día. Se genera lista de horarios con aforos de historial y aforo actual para la hora actual dependiendo de la semana y dia.
 router.get("/concurrencias-aforo-gimnasio/:num_semana/:dia_semana",  (req, res) => {
   const { num_semana, dia_semana } = req.params;
   client.query(  `

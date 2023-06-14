@@ -1,38 +1,35 @@
 require("dotenv").config();
 const { Client } = require('pg');
 
-// Replace the connection link with your own PostgreSQL connection details
+// Reemplaza el enlace de conexión con tus propios detalles de conexión de PostgreSQL
 const connectionLink = process.env.CONNECTION_LINK;
 
-// Create a new PostgreSQL client
+// Crea un nuevo cliente de PostgreSQL
 const client = new Client({
   connectionString: connectionLink,
   timezone: "America/Monterrey"
-
 });
 
-// Connect to the database
+// Conectarse a la base de datos
 client.connect((err) => {
     if (err) {
-      console.error('Error connecting to the database:', err);
+      console.error('Error al conectarse a la base de datos:', err);
       return;
     }
-    console.log('Connected to the database');
+    console.log('Conectado a la base de datos');
     client.query('SET TIME ZONE \'America/Monterrey\'');
-    console.log('Time zone set to America/Monterrey');
-  });
-  
+    console.log('Zona horaria establecida en America/Monterrey');
+});
 
-// Disconnect from the database
+// Desconectar de la base de datos
 module.exports.disconnect = () => {
     client.end((error) => {
       if (error) {
-        console.error('Error disconnecting from the database:', error);
+        console.error('Error al desconectarse de la base de datos:', error);
         return;
       }
-      console.log('Disconnected from the database');
+      console.log('Desconectado de la base de datos');
     });
-  };
-  
-  module.exports = client;
+};
 
+module.exports = client;

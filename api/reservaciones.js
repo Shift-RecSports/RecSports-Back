@@ -130,8 +130,7 @@ ORDER BY espacio_list.id, time_list.hora_inicio ASC;
 // POST new reservation
 router.post("/", upload.single(), (req, res) => {
   const body = req.body;
-  
-  // Check if the user is an Alumno with tipo usuario id 3
+  // Verifica si el usuario es un Alumno con un identificador de tipo de usuario igual a 3.
   client.query(
     `SELECT tipo FROM Usuarios WHERE matricula = $1`,
     [body.matricula_alumno],
@@ -146,12 +145,10 @@ router.post("/", upload.single(), (req, res) => {
       const tipoUsuario = results.rows[0].tipo;
       
       if (tipoUsuario !== 3) {
-        // User is not an Alumno with tipo usuario id 3
-        // Proceed with creating a new reservation without checking for existing reservations
+        // Si el usuario no es un alumno con un tipo de usuario ID 3, procede a crear una nueva reserva sin verificar las reservas existentes.
         createReservation(body, res, 2);
       } else {
-        // User is an Alumno with tipo usuario id 3
-        // Check if there is an existing reservation for the same matricula, date, and deporte
+        // Verifica si hay una reservación existente para el mismo número de matrícula, fecha y deporte del usuario que es un alumno con el identificador de tipo de usuario 3.
         client.query(
           `SELECT COUNT(*) AS count
           FROM Reservaciones r
@@ -172,12 +169,12 @@ router.post("/", upload.single(), (req, res) => {
             const count = parseInt(results.rows[0].count);
 
             if (count > 0) {
-              // There is an existing reservation for the same matricula, date, and deporte
+              // Existe una reservación existente para la misma matrícula, fecha y deporte.
               return res.status(400).json({
                 message: "Solo disponible una reserva para este deporte en esta fecha.",
               });
             } else {
-              // No existing reservation found, proceed with creating a new reservation
+              // No se encontró una reservación existente, proceder con la creación de una nueva reservación.
               createReservation(body, res, 2);
             }
           }
@@ -187,7 +184,7 @@ router.post("/", upload.single(), (req, res) => {
   );
 });
 
-// Function to create a new reservation
+//  Crea una nueva reserva en la base de datos, utilizando los datos proporcionados en el cuerpo de la solicitud. 
 function createReservation(body, res, estatus) {
   client.query(
     `INSERT INTO Reservaciones (hora_seleccionada, matricula_alumno, fecha, espacio, estatus)
@@ -208,10 +205,8 @@ function createReservation(body, res, estatus) {
 }
 
 
-
-
-
 // UPDATE reservacion
+// actualiza una reservación
 router.put("/", upload.single(), (req, res) => {
   const body = req.body;
   client.query(
@@ -249,6 +244,7 @@ router.delete("/:id", (req, res) => {
 
 
 // CANCEL reservacion
+//Cancelar una reservación identificada por su ID. Realiza una consulta a la base de datos para actualizar el estado de la reservación a 4 (cancelada) y devuelve los datos actualizados de la reservación 
 router.put("/cancelar/:id", upload.single(), (req, res) => {
   const id = req.params.id;
   client.query(

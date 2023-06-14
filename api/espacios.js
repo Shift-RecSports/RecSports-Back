@@ -6,18 +6,18 @@ const client = require("../config/database");
 const fs = require("fs");
 
 
-// Set storage engine for multer
+// Establecer el motor de almacenamiento para multer
 const storage = multer.diskStorage({
   destination: "./imagenes/espacios",
   filename: function (req, file, callback) {
-    // Generate a unique filename
+    // Generar un nombre de archivo único
     const uniqueName = `${Date.now()}-${Math.round(
       Math.random() * 1e9
     )}${path.extname(file.originalname)}`;
     callback(null, uniqueName);
   },
 });
-// Create upload instance
+// Crear una instancia de carga
 const upload = multer({ storage: storage });
 
 
@@ -30,7 +30,7 @@ router.get("/", (req, res) => {
         message: "Error respuesta de servidor",
       });
     }
-    
+
     return res.json(results.rows);
   });
 });
@@ -38,7 +38,7 @@ router.get("/", (req, res) => {
 //GET espacio by Id
 router.get("/:id", (req, res) => {
   const id = req.params.id;
-  client.query(`SELECT * FROM Espacios WHERE id = $1;`,[id], (error, results, fields) => {
+  client.query(`SELECT * FROM Espacios WHERE id = $1;`, [id], (error, results, fields) => {
     if (error) {
       console.log(error);
       return res.status(500).json({
@@ -120,14 +120,14 @@ router.put("/", upload.single("imagen"), (req, res) => {
         fs.unlink(previousImagePath, (err) => {
           if (err) {
             console.error("Failed to delete previous image from Espacio");
-          
+
           }
         });
       }
     );
-  } 
-   // Update the espacio with the new image filename or with the same imagen string
-   client.query(
+  }
+  // Update the espacio with the new image filename or with the same imagen string
+  client.query(
     `UPDATE Espacios SET nombre = $1, horarios = $2, aforo = $3, zona = $4, imagen = $5, deporte = $6  WHERE id = $7 RETURNING *;`,
     [body.nombre, body.horarios, body.aforo, body.zona, imagen, body.deporte, body.id],
     (err, result) => {

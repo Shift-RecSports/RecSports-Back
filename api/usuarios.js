@@ -39,6 +39,7 @@ router.get("/:matricula", (req, res) => {
 });
 
 //POST usario Login
+//Verifica las credenciales proporcionadas por el usuario en la base de datos y responde con el resultado: si las credenciales son correctas, devuelve los detalles del usuario 
 router.post("/login",upload.single(), (req, res) => {
   const body = req.body;
   client.query(`SELECT u.matricula, u.nombre, tu.tipo

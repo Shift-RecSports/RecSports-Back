@@ -6,18 +6,18 @@ const client = require("../config/database");
 const fs = require("fs");
 
 
-// Set storage engine for multer
+// Establecer el motor de almacenamiento para multer
 const storage = multer.diskStorage({
   destination: "./imagenes/mapas",
   filename: function (req, file, callback) {
-    // Generate a unique filename
+    // Generar un nombre de archivo único
     const uniqueName = `${Date.now()}-${Math.round(
       Math.random() * 1e9
     )}${path.extname(file.originalname)}`;
     callback(null, uniqueName);
   },
 });
-// Create upload instance
+// Crear una instancia de carga
 const upload = multer({ storage: storage });
 
 
@@ -58,10 +58,9 @@ router.post("/", upload.single("imagen"), (req, res) => {
 // UPDATE mapa
 router.put("/", upload.single("imagen"), (req, res) => {
   let imagen = req.file ? req.file.filename : req.body.imagen;
-
-  // Check if the received imagen parameter is a file
+  // Verifica si el parámetro de imagen recibido es un archivo.
   if (req.file) {
-    // Delete the previous image file of the specific mapa
+    // Elimina el archivo de imagen anterior del mapa específico.
     client.query(
       `SELECT imagen FROM Mapa WHERE id = 1`,
       (err, results) => {
@@ -70,7 +69,7 @@ router.put("/", upload.single("imagen"), (req, res) => {
           return res.status(500).json({ error: "Mapa not found" });
         }
         const previousImagen = results.rows[0].imagen;
-        // Delete the previous image file
+        // Elimina el archivo de imagen anterior.
         const previousImagePath = path.join(__dirname, "../imagenes/mapas", previousImagen);
         fs.unlink(previousImagePath, (err) => {
           if (err) {
@@ -81,7 +80,7 @@ router.put("/", upload.single("imagen"), (req, res) => {
     );
   }
 
-  // Update the mapa with the new image filename or with the same imagen string
+  // Actualiza el mapa con el nombre de archivo de la nueva imagen o con la misma cadena de imagen.
   client.query(
     `UPDATE Mapa SET imagen = $1 WHERE id = 1 RETURNING *;`,
     [imagen],
@@ -90,7 +89,7 @@ router.put("/", upload.single("imagen"), (req, res) => {
         console.error("Error updating mapa:", err);
         return res.status(500).json({ error: "Failed to update mapa" });
       }
-      else{
+      else {
         return res.status(200).json(result.rows[0]);
       }
     }
@@ -101,36 +100,37 @@ router.put("/", upload.single("imagen"), (req, res) => {
 // DELETE mapa
 router.delete("/:id", (req, res) => {
   const id = req.params.id;
-  // Delete the mapa from the database and retrieve the deleted row
+  // Elimina el mapa de la base de datos y recupera la fila eliminada.
   client.query(
     `DELETE FROM Mapa WHERE id = $1 RETURNING *;`,
     [id],
     (err, result) => {
       if (err) {
         console.error("Error deleting mapa:", err);
-        return res.status(500).json({ error: "Failed to delete mapa" });
+        return res.status(500).json({ error: "Error al borrar el mapa" });
       }
 
       if (result.rows.length === 0) {
-        // Mapa not found
-        return res.status(404).json({ error: "Mapa not found" });
+        // Mapa no encontrado
+        return res.status(404).json({ error: "Mapa no encontrado" });
       }
 
       const imagen = result.rows[0].imagen;
       if (!imagen) {
         // No image associated with the Mapa
-        return res.status(200).json({ message: "Mapa deleted successfully. No image to delete" });
+        return res.status(200).json({ message: "Mapa eliminado correctamente. No hay imagen para eliminar." });
       }
 
       // Delete the image file
       const imagePath = path.join(__dirname, "../imagenes/mapas", imagen);
       fs.unlink(imagePath, (err) => {
         if (err) {
-          console.error("Error deleting image:", err);
-          return res.status(500).json({ error: "Failed to delete image" });
+          console.error("Error eliminado imagen", err);
+          return res.status(500).json({ error: "No se pudo eliminar la imagen."
+        });
         }
 
-        return res.status(200).json({ message: "Mapa and associated image deleted successfully" });
+        return res.status(200).json({ message: "Mapa y la imagen asociada eliminados correctamente." });
       });
     }
   );

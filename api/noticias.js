@@ -6,18 +6,18 @@ const client = require("../config/database");
 const fs = require("fs");
 
 
-// Set storage engine for multer
+// Establecer el motor de almacenamiento para multer
 const storage = multer.diskStorage({
   destination: "./imagenes/noticias",
   filename: function (req, file, callback) {
-    // Generate a unique filename
+    // Generar un nombre de archivo único
     const uniqueName = `${Date.now()}-${Math.round(
       Math.random() * 1e9
     )}${path.extname(file.originalname)}`;
     callback(null, uniqueName);
   },
 });
-// Create upload instance
+// Crear una instancia de carga
 const upload = multer({ storage: storage });
 
 
@@ -123,34 +123,34 @@ router.put("/", upload.single("imagen"), (req, res) => {
 //DELETE noticia
 router.delete("/:id", (req, res) => {
   const id = req.params.id;
-  // Delete the Noticia from the database and retrieve the deleted row
+  // Elimina la noticia de la base de datos y recupera la fila eliminada.
   client.query(
     `DELETE FROM Noticias WHERE id = $1 RETURNING *`,
     [id],
     (err, result) => {
       if (err) {
-        console.error("Error deleting Noticia:", err);
-        return res.status(500).json({ error: "Failed to delete Noticia" });
+        console.error("Error elimando Noticia:", err);
+        return res.status(500).json({ error: "Error borrando Noticia" });
       }
 
       if (result.rows.length === 0) {
-        // Noticia not found
-        return res.status(404).json({ error: "Noticia not found" });
+        // Noticia no encontrada
+        return res.status(404).json({ error: "Noticia no encontrada" });
       }
 
       const imagen = result.rows[0].imagen;
       if (!imagen) {
-        // No image associated with the Noticia
-        return res.status(200).json({ message: "Noticia deleted successfully. No image to delete" });
+        // No imagen asociada con la noticia
+        return res.status(200).json({ message: "Noticia eliminado correctamente. No hay imagen para eliminar." });
       }
-      // Delete the image file
+      // Elimina el archivo de imagen
       const imagePath = path.join(__dirname, "../imagenes/noticias", imagen);
       fs.unlink(imagePath, (err) => {
         if (err) {
-          console.error("Failed to delete previous image from Noticia");
+          console.error("No se pudo eliminar la imagen previa de Noticia.");
         }
 
-        return res.status(200).json({ message: "Noticia and associated image deleted successfully" });
+        return res.status(200).json({ message: "Noticia y la imagen asociada eliminados correctamente." });
       });
     }
   );

@@ -6,18 +6,18 @@ const client = require("../config/database");
 const fs = require("fs");
 
 
-// Set storage engine for multer
+// Establecer el motor de almacenamiento para multer
 const storage = multer.diskStorage({
   destination: "./imagenes/deportes",
   filename: function (req, file, callback) {
-    // Generate a unique filename
+    // Generar un nombre de archivo único
     const uniqueName = `${Date.now()}-${Math.round(
       Math.random() * 1e9
     )}${path.extname(file.originalname)}`;
     callback(null, uniqueName);
   },
 });
-// Create upload instance
+// Crear una instancia de carga
 const upload = multer({ storage: storage });
 
 
@@ -35,7 +35,7 @@ router.get("/", (req, res) => {
   });
 });
 
-//GET fav # deportes
+//GET deportes favoritos
 router.get("/favoritos/:number", (req, res) => {
   const number = req.params.number;
   client.query(`SELECT * FROM DEPORTES LIMIT $1`,[number], (error, results, fields) => {
@@ -133,6 +133,7 @@ router.put("/", upload.single("imagen"), (req, res) => {
 });
 
 // DELETE deporte
+//Actualiza un deporte en una base de datos, junto con su imagen asociada si se proporciona, eliminando la imagen anterior si existe. 
 router.delete("/:id", (req, res) => {
   const id = req.params.id;
   // Delete the deporte from the database and retrieve the deleted row

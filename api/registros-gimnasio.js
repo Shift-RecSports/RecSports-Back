@@ -48,6 +48,7 @@ router.get("/:id", (req, res) => {
 });
 
 //GET registro gimnasio by Fecha
+//Seleccionar registros de gimnasio que coincidan con la fecha proporcionada, ordenándolos por la hora de entrada y aplicando un desplazamiento (offset) y límite (limit) para paginación. 
 router.get("/fecha=:fecha/offset=:offset", (req, res) => {
   const fecha = req.params.fecha;
   const offset = req.params.offset;
@@ -79,6 +80,7 @@ router.get("/fecha=:fecha/offset=:offset", (req, res) => {
 });
 
 //GET aforo actual gimnasio
+//Recuento actual de personas en un gimnasio y el límite de capacidad establecido para el día de la semana actual
 router.get("/aforo/actual", (req, res) => {
   client.query(
     `SELECT COUNT(*) AS actual, COALESCE((SELECT aforo FROM Gimnasio WHERE dia_semana = EXTRACT(DOW FROM CURRENT_DATE)::INTEGER LIMIT 1), 0) AS aforo
@@ -180,7 +182,7 @@ router.put("/", upload.single(), (req, res) => {
   );
 });
 
-//UPDATE registro gimnasio with only Matricula
+//UPDATE registro gimnasio con solo Matricula
 router.put("/matricula", upload.single(), (req, res) => {
   const body = req.body;
   client.query(

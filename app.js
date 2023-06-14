@@ -18,7 +18,7 @@ const { runJobEveryExactHour, runJobEveryIntermediateHour, runJobEvery15Minutes 
 
 // Middleware setup
 app.use(express.json());
-// Specify the directory where your static files are stored
+// Especifica el directorio donde se almacenan tus archivos estáticos
 app.use(express.static("imagenes"));
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -27,7 +27,7 @@ app.use(function(req, res, next) {
  next();
 });
 
-// Routes
+// Rutas
 app.use("/api/deportes", deportesRouter);
 app.use("/api/espacios", espaciosRouter);
 app.use("/api/historial", historialRouter);
@@ -41,11 +41,11 @@ app.use("/api/encuestas", encuestasRouter);
 
 
 
-// Run the Scheduled jobs
-runJobEveryExactHour();
-runJobEveryIntermediateHour();
-runJobEvery15Minutes();
+// Scheduled jobs (funciones automatizadas y programadas)
+runJobEveryExactHour();//Cada hora
+runJobEveryIntermediateHour(); //A los 30 minutos de cada hora
+runJobEvery15Minutes(); //Cada 15 minutos
 
 app.listen(process.env.PORT, () => {
-  console.log("Server is up and running on PORT:", process.env.PORT);
+  console.log("Servidor esta corriendo en el PUERTO:", process.env.PORT);
 });
