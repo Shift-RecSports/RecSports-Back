@@ -12,7 +12,7 @@ const usuariosRouter = require("./api/usuarios");
 const noticiasRouter = require("./api/noticias");
 const mapaRouter = require("./api/mapa");
 const encuestasRouter = require("./api/encuestas");
-const { runJobEveryExactHour, runJobEveryIntermediateHour, runJobEvery15Minutes } = require("./api/scheduled_jobs");
+// const { runJobEveryExactHour, runJobEveryIntermediateHour, runJobEvery15Minutes } = require("./api/scheduled_jobs");
 
 
 
@@ -41,10 +41,10 @@ app.use("/api/encuestas", encuestasRouter);
 
 
 
-// Scheduled jobs (funciones automatizadas y programadas)
-runJobEveryExactHour();//Cada hora
-runJobEveryIntermediateHour(); //A los 30 minutos de cada hora
-runJobEvery15Minutes(); //Cada 15 minutos
+// // Scheduled jobs (funciones automatizadas y programadas)
+// runJobEveryExactHour();//Cada hora
+// runJobEveryIntermediateHour(); //A los 30 minutos de cada hora
+// runJobEvery15Minutes(); //Cada 15 minutos
 
 app.listen(process.env.PORT, () => {
   console.log("Servidor esta corriendo en el PUERTO:", process.env.PORT);
