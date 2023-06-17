@@ -12,7 +12,7 @@ const usuariosRouter = require("./api/usuarios");
 const noticiasRouter = require("./api/noticias");
 const mapaRouter = require("./api/mapa");
 const encuestasRouter = require("./api/encuestas");
-// const { runJobEveryExactHour, runJobEveryIntermediateHour, runJobEvery15Minutes } = require("./api/scheduled_jobs");
+ const { runJobEveryExactHour, runJobEveryIntermediateHour, runJobEvery15Minutes } = require("./api/scheduled_jobs");
 
 
 
